@@ -1,3 +1,7 @@
+<?php
+/** @var string $input */
+/** @var \App\Renderable[] $components */
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,14 +27,20 @@
         </div>
         <div class="row mt-4">
             <div class="col-md-7 mx-auto">
-
                 <div class="card">
                     <h6 class="card-header">Input</h6>
                     <div class="card-body">
                         <p class="card-text"><?= $input ?></p>
                     </div>
                 </div>
-
+                <?php foreach ($components as $component) : ?>
+                <div class="card mt-4">
+                    <h6 class="card-header"><?= $component->getTitle() ?></h6>
+                    <div class="card-body">
+                        <?= $component->render() ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>

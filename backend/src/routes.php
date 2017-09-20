@@ -21,7 +21,12 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
         return $response->withRedirect('/');
     }
 
+    $components = [];
+
+    $components[] = new \App\Author\Collaboration();
+
     return $this->renderer->render($response, 'input.phtml', [
-        'input' => $input
+        'input'      => $input,
+        'components' => $components
     ]);
 });

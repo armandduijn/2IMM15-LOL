@@ -1,0 +1,19 @@
+<?php
+/** @var \App\Author\Model[] $authors */
+/** @var \App\Paper\Model[] $collaborations */
+?>
+<p class="card-text">The authors
+    <?php foreach ($authors as $index => $author) : ?>
+        <a href="?i=<?= $author->getName() ?>"><?= $author->getName() ?></a><?= $index < (count($authors) - 1) ? ',' : '' ?>
+    <?php endforeach; ?>
+    <?php if (count($collaborations) > 0) : ?>
+    have collaborated on the following <?= count($collaborations) ?> papers:
+    <ul>
+        <?php foreach ($collaborations as $collaboration) : ?>
+        <li><?= $collaboration->getTitle() ?></li>
+        <?php endforeach; ?>
+    </ul>
+    <?php else : ?>
+    have not collaborated.
+    <?php endif; ?>
+</p>
