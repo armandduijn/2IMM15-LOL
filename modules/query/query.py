@@ -1,8 +1,6 @@
 from pyparsing import Word, alphanums, Keyword, Group, Combine, Forward, Suppress, Optional, OneOrMore, oneOf, Literal, nums, ZeroOrMore
-from pprint import pprint
-from var_dump import var_dump
 from modules.stemming.porter2 import stem
-import json
+from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord
 import re
 
 def Syntax():
@@ -42,6 +40,55 @@ def Syntax():
 
     return operatorOr
 
+def evaluateAnd(argument):
+    return evaluate(argument[0]).intersection(evaluate(argument[1]))
+
+def evaluateOr(argument):
+    return evaluate(argument[0]).union(evaluate(argument[1]))
+
+def evaluateNot(argument):
+    return GetNot(evaluate(argument[0]))
+
+def evaluateParenthesis(argument):
+    return evaluate(argument[0])
+
+def evaluateQuotes(argument):
+    """Evaluate quoted strings
+
+    First is does an 'and' on the indidual search terms, then it asks the
+    function GetQuoted to only return the subset of ID's that contain the
+    literal string.
+    """
+    r = Set()
+    search_terms = []
+    for item in argument:
+        search_terms.append(item[0])
+        if len(r) == 0:
+            r = evaluate(item)
+        else:
+            r = r.intersection(evaluate(item))
+    return GetQuotes(' '.join(search_terms), r)
+
+def evaluateWord(argument):
+    return GetWord(argument[0])
+
+def evaluateWordWildcard(argument):
+    return GetWordWildcard(argument[0])
+
+def evaluate(argument):
+    methods = {
+        'and': evaluateAnd,
+        'or': evaluateOr,
+        'not': evaluateNot,
+        'parenthesis': evaluateParenthesis,
+        'quotes': evaluateQuotes,
+        'word': evaluateWord,
+        'wordwildcard': evaluateWordWildcard,
+    }
+
+    return methods[argument.getName()](argument)
+
+
 def stemWord(matchobj):
      # if necessary ignore keywords in the stemming, but the Porter stemmer doesn't affect them.
      return stem(matchobj.group(0))
@@ -56,5 +103,18 @@ if __name__ == "__main__":
         results = expr.parseString( stemQueryString(s) )
         print s+'\n->\n'+results.dump()
 
+
     #test( "(9 AND 3)" )
-    test( "data or usage or mining and (not porter or (not retrieval and qualified) and greedy)" )
+    test( "data or \"usage or mining\" and (not porter or (not retrieval and qualified) and greedy)" )
+
+def Query(query):
+    """
+    Returns a set of documents from the index for a given boolean query.
+    """
+    expr = Syntax()
+    return evaluate(expr.parseString(stemQueryString(query))[0])
+
+def PrintQueryTree(query):
+    expr = Syntax()
+    results = expr.parseString(stemQueryString(query))
+    return results.dump()
