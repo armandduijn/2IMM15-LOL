@@ -57,7 +57,7 @@ def GetWord(word):
     else:
         return Set()
 
-def GetWordWildcard(self, word):
+def GetWordWildcard(word):
     result = Set()
     index = Index()[0]
     for item in index.keys():
@@ -65,7 +65,7 @@ def GetWordWildcard(self, word):
             result = result.union(Set(index[item].keys()))
     return result
 
-def GetQuotes(self, search_string, tmp_result):
+def GetQuotes(search_string, tmp_result):
     result = Set()
     docs = Index()[1]
     for item in tmp_result:
@@ -73,7 +73,7 @@ def GetQuotes(self, search_string, tmp_result):
             result.add(item)
     return result
 
-def GetNot(self, not_set):
+def GetNot(not_set):
     docs = Index()[1]
     all = Set(docs.keys())
     return all.difference(not_set)

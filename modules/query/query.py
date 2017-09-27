@@ -1,6 +1,7 @@
 from pyparsing import Word, alphanums, Keyword, Group, Combine, Forward, Suppress, Optional, OneOrMore, oneOf, Literal, nums, ZeroOrMore
 from modules.stemming.porter2 import stem
 from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord
+from sets import Set
 import re
 
 def Syntax():
@@ -110,4 +111,4 @@ def PrintQueryTree(query):
     return results.dump()
 
 if __name__ == "__main__":
-    print Query("data or \"usage or mining\" and (not porter or (not retrieval and qualified) and greedy)")
+    print Query("finite and field")
