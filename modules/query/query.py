@@ -97,16 +97,6 @@ def stemQueryString(queryString):
     queryString = re.sub(r'([a-zA-Z]*)', stemWord, queryString)
     return queryString
 
-if __name__ == "__main__":
-    expr = Syntax()
-    def test(s):
-        results = expr.parseString( stemQueryString(s) )
-        print s+'\n->\n'+results.dump()
-
-
-    #test( "(9 AND 3)" )
-    test( "data or \"usage or mining\" and (not porter or (not retrieval and qualified) and greedy)" )
-
 def Query(query):
     """
     Returns a set of documents from the index for a given boolean query.
@@ -118,3 +108,6 @@ def PrintQueryTree(query):
     expr = Syntax()
     results = expr.parseString(stemQueryString(query))
     return results.dump()
+
+if __name__ == "__main__":
+    print Query("data or \"usage or mining\" and (not porter or (not retrieval and qualified) and greedy)")
