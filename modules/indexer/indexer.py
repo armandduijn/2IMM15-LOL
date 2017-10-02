@@ -2,7 +2,10 @@ from pyparsing import *
 from modules.stemming.porter2 import stem
 import csv
 import pickle
+import os
 from sets import Set
+
+os.chdir(os.path.dirname(__file__))
 
 def Index(file_dataset = "papers.csv", file_dump = "output.p", id_col = 0, text_col = -1):
 
@@ -10,7 +13,7 @@ def Index(file_dataset = "papers.csv", file_dump = "output.p", id_col = 0, text_
         arr = pickle.load(open(file_dump, "rb"))
         collection = arr[0]
         docs = arr[1]
-        print "Retrieved index from file " + file_dump
+        #print "Retrieved index from file " + file_dump
     except (OSError, IOError) as e:
         collection = {}
         doc_nr = 0

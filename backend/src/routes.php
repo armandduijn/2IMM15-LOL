@@ -24,6 +24,7 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
     $components = [];
 
     $components[] = new \App\Author\Collaboration();
+    $components[] = new \App\Results\Results();
 
     return $this->renderer->render($response, 'input.phtml', [
         'input'      => $input,
