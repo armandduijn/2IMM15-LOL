@@ -4,6 +4,10 @@ import csv
 import pickle
 import os
 from sets import Set
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
+
 
 os.chdir(os.path.dirname(__file__))
 
@@ -13,7 +17,7 @@ def Index(file_dataset = "papers.csv", file_dump = "output.p", id_col = 0, text_
         arr = pickle.load(open(file_dump, "rb"))
         collection = arr[0]
         docs = arr[1]
-        #print "Retrieved index from file " + file_dump
+        print "Retrieved index from file " + file_dump
     except (OSError, IOError) as e:
         collection = {}
         doc_nr = 0
@@ -83,4 +87,5 @@ def GetNot(not_set):
 
 if __name__ == "__main__":
     test = Index()
-    print test.index
+
+    print pp.pformat(test[0])
