@@ -5,6 +5,7 @@ import pickle
 import os
 from sets import Set
 import pprint
+import math
 pp = pprint.PrettyPrinter(indent=2)
 
 
@@ -16,12 +17,14 @@ def Index(file_dataset = "papers.csv", file_dump = "output.txt", id_col = 0, tex
     try:
         arr = pickle.load(open(file_dump, "rb"))
         collection = arr[0]
-        docs = arr[1]
+        idf = arr[1]
         print "Retrieved index from file " + file_dump
     except (OSError, IOError) as e:
         collection = {}
         doc_nr = 0
-        docs = {}
+        idf = {}
+
+        print "Building indexer..."
 
         with open(file_dataset, "r") as paperscsv:
             papersreader = csv.reader(paperscsv,delimiter=',',quotechar='"')
@@ -30,11 +33,11 @@ def Index(file_dataset = "papers.csv", file_dump = "output.txt", id_col = 0, tex
                 if doc_nr > 0:
                     id = doc[id_col]
                     text = doc[text_col]
-                    docs[id] = text
                     # extract tokens from the title and the text
                     # TODO: improve parser grammar to also include numbers
                     grammar = Word(alphas)
                     token_pos = 0
+                    print "Examining doc: " + id
                     for token,start,end in grammar.scanString(text):
                         # token is still in array. get the first element to get the string, and then stem this.
                         token = stem(str(token[0]).lower())
@@ -51,11 +54,12 @@ def Index(file_dataset = "papers.csv", file_dump = "output.txt", id_col = 0, tex
                         doc_terms.append(token_pos)
                 doc_nr += 1
 
-        pickle.dump(collection, open(file_dump, "wb"))
+        pickle.dump([collection, idf], open(file_dump, "wb"))
 
-        print "Retrieved index by building it from dataset: " + file_dataset
+        for term in collection.keys():
+            idf[term] = math.log10((doc_nr - 1.0)/len(collection[term]))
 
-    return collection
+    return [collection, idf]
 
 def GetWord(word):
     index = Index()[0]
@@ -88,4 +92,4 @@ def GetNot(not_set):
 if __name__ == "__main__":
     test = Index()
 
-    print pp.pformat(test)
+    print pp.pformat(test[1])
