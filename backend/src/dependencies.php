@@ -19,5 +19,5 @@ $container['logger'] = function ($c) {
 };
 
 $container[PDO::class] = function ($c) {
-    return new PDO('sqlite:/' . __DIR__ . '/../../data/database.sqlite');
+    return new PDO('sqlite:' . __DIR__ . '/../../data/database.sqlite');
 };
