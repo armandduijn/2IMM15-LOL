@@ -11,7 +11,7 @@ pp = pprint.PrettyPrinter(indent=2)
 
 os.chdir(os.path.dirname(__file__))
 
-def Index(file_dataset = "papers.csv", file_dump = "output.p", id_col = 0, text_col = -1):
+def Index(file_dataset = "papers.csv", file_dump = "output.txt", id_col = 0, text_col = -1):
 
     try:
         arr = pickle.load(open(file_dump, "rb"))
@@ -48,14 +48,14 @@ def Index(file_dataset = "papers.csv", file_dump = "output.p", id_col = 0, text_
                                 collection[token][id] = doc_terms
                         else:
                             collection[token] = {id:doc_terms}
-                            doc_terms.append(token_pos)
+                        doc_terms.append(token_pos)
                 doc_nr += 1
 
-        pickle.dump([collection, docs], open(file_dump, "wb"))
+        pickle.dump(collection, open(file_dump, "wb"))
 
         print "Retrieved index by building it from dataset: " + file_dataset
 
-    return [collection,docs]
+    return collection
 
 def GetWord(word):
     index = Index()[0]
@@ -88,4 +88,4 @@ def GetNot(not_set):
 if __name__ == "__main__":
     test = Index()
 
-    print pp.pformat(test[0])
+    print pp.pformat(test)
