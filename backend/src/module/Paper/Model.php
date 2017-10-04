@@ -2,15 +2,52 @@
 
 namespace App\Paper;
 
-class Model
+use App\AbstractModel;
+
+class Model extends AbstractModel
 {
-    public function getId(): int
+    /**
+     * @var int|null
+     */
+    private $id;
+
+    /**
+     * @var string|null
+     */
+    private $title;
+
+    /**
+     * Model constructor.
+     *
+     * @param array $data
+     */
+    public function __construct(array $data = [])
     {
-        return 1;
+        $this->id    = $data['id']    ?? null;
+        $this->title = $data['title'] ?? null;
     }
 
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
     public function getTitle(): string
     {
-        return 'Bla bla';
+        return $this->title;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->id;
     }
 }

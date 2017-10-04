@@ -2,16 +2,18 @@
 
 namespace App\Results;
 
-use App\Renderable;
+use App\AbstractModule;
+use App\RenderableInterface;
+use PDO;
 
-class Results implements Renderable
+class Results extends AbstractModule implements RenderableInterface
 {
     public function getTitle(): string
     {
         return 'Results';
     }
 
-    public function render(): string
+    public function render($data = []): string
     {
         $data = [
         
