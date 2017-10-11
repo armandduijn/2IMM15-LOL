@@ -19,7 +19,7 @@ def Index(file_dataset = "papers.csv", file_dump = "output.txt", id_col = 0, tex
         collection = arr[0]
         idf = arr[1]
         print "Retrieved index from file " + file_dump
-    except (OSError, IOError) as e:
+    except:
         collection = {}
         doc_nr = 0
         idf = {}
@@ -54,10 +54,10 @@ def Index(file_dataset = "papers.csv", file_dump = "output.txt", id_col = 0, tex
                         doc_terms.append(token_pos)
                 doc_nr += 1
 
-        pickle.dump([collection, idf], open(file_dump, "wb"))
-
         for term in collection.keys():
             idf[term] = math.log10((doc_nr - 1.0)/len(collection[term]))
+
+        pickle.dump([collection, idf], open(file_dump, "wb"))
 
     return [collection, idf]
 
@@ -78,7 +78,7 @@ def GetWordWildcard(word):
 
 def GetQuotes(search_string, tmp_result):
     result = Set()
-    docs = Index()[1]
+    index = Index()[0]
     for item in tmp_result:
         if docs[item].count(search_string):
             result.add(item)
