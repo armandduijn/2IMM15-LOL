@@ -1,13 +1,26 @@
 <div class="r" style="margin-bottom: 26px;">
   <div>
-    <h4>
-        <a href="">
-          <?= $result['title'] ?>
+    <h4 style="font-size: 17px; margin-bottom: 4px;">
+        <a data-toggle="modal" data-target="#documentModal" data-url="https://papers.nips.cc/paper/<?= $result['pdf_name']
+        ?>" data-title="<?= $result['title'] ?>" href="https://papers.nips.cc/paper/<?= $result['pdf_name'] ?>">
+          <?= queryTermBold($stemmedInput, $result['title']) ?>
         </a>
     </h4>
-    <div class="s" style="line-height:18px; color: #545454">
-      <?= $result['info'] ?>
-      <?= $result['snippet'] ?>
+    <div class="s" style="line-height:18px; font-size: 13px; color: #545454">
+        <div style="color: #00a736">
+          <?php foreach($result['authors'] as $i => $author): ?>
+              <a style="color: #00a736" data-id="<?= $author['id']?>" href="?i=author:<?= $author['id']?>"><?=
+                  $author['name']?></a><?php
+                if ($i + 2 < count($result['authors'])) {
+                  echo ',';
+                } elseif ($i + 2 == count($result['authors'])) {
+                  echo ' and';
+                }
+              ?>
+          <?php endforeach; ?> - <a style="color: #00a736" href="?i=year:<?= $result['year']?>"><?= $result['year']
+                ?></a>
+        </div>
+        <?= queryTermBold($stemmedInput, $result['snippet']) ?>
     </div>
     
   </div>

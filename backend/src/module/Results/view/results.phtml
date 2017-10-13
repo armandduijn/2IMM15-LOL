@@ -1,5 +1,16 @@
 <?php
-
+function queryTermBold($stemmedQuery, $text) {
+  // Stem the text
+//  $command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
+//  $command .= escapeshellarg($text);
+//  $stemmedText = shell_exec($command);
+//  $patterns = [];
+//  foreach($stemmedQuery as $term)
+//      $patterns[] = '/\b('.trim($term).')\b/i';
+//
+//  return preg_replace($patterns, '<strong>$0</strong>', $stemmedText);
+    return $text;
+}
 ?>
 <p class="card-text">
   <?php printf("%d documents found", count($results)); ?>
@@ -7,10 +18,36 @@
   foreach($results as $id => $document) {
     $result = [
         'title' => $document['title'],
-        'info' => 'ID: '.$id.' Year: '.$document['year'].' Authors: '.implode(", ", $document['authorsg']),
-        'snippet' => ''
+        //'info' => 'ID: '.$id.' Year: '.$document['year'].' Authors: '.implode(", ", $document['authors']),
+        'authors' => $document['authors'],
+        'year' => $document['year'],
+        'pdf_name' => $document['pdf_name'],
+        'snippet' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a scelerisque ligula. Nullam cursus, mi et cursus aliquet, ex erat hendrerit magna, non imperdiet magna metus sit amet diam. Vivamus porttitor volutpat enim a congue. Ut tempor risus a turpis accumsan ullamcorper. Morbi in ipsum dolor. Donec nisl mauris, auctor ac dictum venenatis, mattis vitae eros.',
     ];
     include __DIR__ . '/result.phtml';
   }
   ?>
 </p>
+
+<div class="modal fade" id="documentModal" tabindex="-1" role="dialog" aria-labelledby="documentModalLabel" 
+     aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="documentModalLabel">DocumentViewer</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 0px; line-height: 0px; background: url('../load.png') center center
+      no-repeat">
+        <iframe class="modal-iframe" src="" style="width: 100%; height: calc(70vh - 50px);"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a class="external" target="_blank" href="#"><button type="button" class="btn btn-primary">Open
+            externally</button></a>
+      </div>
+    </div>
+  </div>
+</div>

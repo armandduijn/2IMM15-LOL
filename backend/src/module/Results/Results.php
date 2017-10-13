@@ -26,19 +26,33 @@ class Results extends AbstractModule implements RenderableInterface
     
         // retrieve info for documents
         $db = new PDO('sqlite:'.__DIR__.'/../../../../data/database.sqlite');
-        $statement = $db->prepare('SELECT *, GROUP_CONCAT(authors.name) as authors from papers INNER JOIN paper_authors ON papers.id=paper_authors
-.paper_id INNER JOIN authors ON paper_authors.author_id=authors.id WHERE papers.id=:id GROUP BY papers.id');
+        $statement = $db->prepare('SELECT *, GROUP_CONCAT(authors.name) as authors_name, GROUP_CONCAT(authors.id) as authors_id from papers INNER JOIN paper_authors ON papers.id=paper_authors.paper_id INNER JOIN authors ON paper_authors.author_id=authors.id WHERE papers.id=:id GROUP BY papers.id');
         $documents = [];
         foreach ($documentIds as $id) {
             $statement->execute([':id' => $id]);
             $row = $statement->fetch(PDO::FETCH_ASSOC);
-            $documents[$id]["title"] = $row['title'];
+            $documents[$id]["title"] = htmlspecialchars($row['title']);
             $documents[$id]["year"] = $row['year'];
-            $documents[$id]["authors"] = explode(",", $row['authors']);
+            $documents[$id]["pdf_name"] = $row['pdf_name'];
+            $authorIds = explode(",", $row['authors_id']);
+            $authorNames = explode(",", htmlspecialchars($row['authors_name']));
+            $documents[$id]["authors"] = [];
+            foreach ($authorIds as $i => $authorId) {
+                $documents[$id]["authors"][] = [
+                  'id' => $authorId,
+                  'name' => $authorNames[$i]
+                ];
+            }
         }
+    
+        $command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
+        $command .= escapeshellarg($_GET['i']);
+        $stemmedInput = explode(" ", shell_exec($command));
+        $stemmedInput = array_filter($stemmedInput, function($var) { return !in_array($var, ['not', 'and', 'or']);});
         
         $data = [
             $results = $documents,
+            $stemmedInput
         ];
 
         ob_start();

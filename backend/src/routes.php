@@ -17,6 +17,9 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
     $params = $request->getQueryParams();
 
     $input = $params['i'] ?? null;
+    $command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
+    $command .= escapeshellarg($_GET['i']);
+    $stemmed = shell_exec($command);
 
     if (is_null($input) || empty($input)) {
         return $response->withRedirect('/');
@@ -44,6 +47,7 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
 
     return $this->renderer->render($response, 'input.phtml', [
         'input'      => $input,
+        'stemmedInput' => $stemmed,
         'components' => $components
     ]);
 });
