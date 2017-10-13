@@ -18,7 +18,7 @@ def Index(file_dataset = "papers.csv", file_dump = "output.txt", id_col = 0, tex
         arr = pickle.load(open(file_dump, "rb"))
         collection = arr[0]
         idf = arr[1]
-        print "Retrieved index from file " + file_dump
+        #print "Retrieved index from file " + file_dump
     except (OSError, IOError) as e:
         collection = {}
         doc_nr = 0
