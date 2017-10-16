@@ -15,8 +15,8 @@ class Results extends AbstractModule implements RenderableInterface
 
     public function render($data = []): string
     {
-        
-        $command = "python \"".getcwd()."/../../modules/view-helpers/query.py\" ";
+
+        $command = "python \"" . __DIR__ . "/../../../../modules/view-helpers/query.py\" ";
         $command .= escapeshellarg($_GET['i']);
         //print($command);
         //var_dump($command);
