@@ -10,10 +10,10 @@ import operator
 import sqlite3
 from collections import defaultdict
 import functools
+import pprint
 
-pp = pprint.PrettyPrinter(indent=2)
 
-
+pp = pprint.PrettyPrinter(indent=4)
 
 os.chdir(os.path.dirname(__file__))
 
@@ -54,6 +54,8 @@ def Index(file_dataset = "../../data/papers.csv", file_dump = "../../data/derive
                     token_pos += 1
                     collection[token][id].append(token_pos)
                 doc_nr += 1
+                if doc_nr > 10:
+                    break
 
         print "Calculating idf..."
 
@@ -62,15 +64,15 @@ def Index(file_dataset = "../../data/papers.csv", file_dump = "../../data/derive
 
         print "Dumping index..."
 
-        pickle.dump(collection,open(file_dump + "index.lol", "wb"),protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(collection,open(file_dump + "index.lol", "wb"))
 
         print "Dumping idf..."
 
-        pickle.dump(idf, open(file_dump + "idf.lol", "wb"),protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(idf, open(file_dump + "idf.lol", "wb"))
 
         print "Dumping doc_length..."
 
-        pickle.dump(docs, open(file_dump + "doc_length.lol", "wb"),protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(docs, open(file_dump + "doc_length.lol", "wb"))
 
     return [collection, idf, docs]
 
@@ -89,6 +91,50 @@ def GetWordWildcard(word):
             result = result.union(Set(index[item].keys()))
     return result
 
+"""
+*Assuming query is already stemmed*
+Usage:
+    GetQuotesExact("a big cake", ???)
+"""
+
+def GetQuotesExact(search_string):
+    index = Index()[0]
+    search_words = search_string.split(" ")
+    for sw in search_words:
+        # If one/more words not in index, return empty result set
+        if sw not in index:
+            return Set()
+
+    result = Set()
+    posting_list = index[search_words[1]]
+    for sw in search_words[1:]:
+        posting_list = merge(index[sw], posting_list, 1)
+    return posting_list
+
+def merge(posting_list1, posting_list2, k=1):
+    merged_list = []
+    intersected_docIDs = sorted(set(posting_list1.keys()) & set(posting_list2.keys()))
+    print intersected_docIDs
+    for docID in intersected_docIDs:
+        positions1 = posting_list1[docID]
+        positions2 = posting_list2[docID]
+        i = j = 0
+        res = []
+        # print docID, positions1, (positions2)
+        while i < len(positions1) and j < len(positions2):
+            # print "comparing {}, and {} from document {}".format(positions1[i], positions2[j, docID)
+            if (positions1[i] + k == positions2[j]):
+                res.append(positions2[j])
+                i = i + 1
+                j = j + 1
+            elif positions1[i] < positions2[j]:
+                i = i + 1
+            else:
+                j = j + 1
+        if(res != []):
+            merged_list.append({docID : res})
+    return merged_list
+
 def GetQuotes(search_string, tmp_result):
     result = Set()
     index = Index()[0]
@@ -99,9 +145,10 @@ def GetQuotes(search_string, tmp_result):
 
 def VSMSearch(query):
     # this function returns the result based on vector space model
-    # the result contains of doc ids sorted by similarity to query, and the first position of relevant token in doc
+    # the result contains of doc ids sorted by similarity to query,
+    # and the first position of relevant token in doc
 
-    #print "query: " + query
+    print "query: " + query
 
     # get tokens from query
     q_grammar = Word(alphas)
@@ -110,7 +157,7 @@ def VSMSearch(query):
     for token, start, end in q_grammar.scanString(query):
         token = stem(str(token[0]).lower())
         token = unicode(token, "utf-8")
-        #print "stemmed token: " + token
+        print "stemmed token: " + token
         if q_tf.has_key(token):
             q_tf[token] += 1
         else:
@@ -137,38 +184,37 @@ def VSMSearch(query):
                     d_score_list[doc] += d_score
                 else:
                     d_score_list[doc] = d_score
-                    first_pos[doc] = posting[0]
 
     #print q_score
     #print sorted(d_score_list.items(), key=operator.itemgetter(0))
 
+    first_pos[doc] = posting[0]
     # normalize the weights of the documents
     for d in d_score_list:
         d_score_list[d] = d_score_list[d] / d_length[d]
 
     # sort the results descendingly
     sorted_scores = sorted(d_score_list.items(), key=operator.itemgetter(1), reverse=True)
-    result = [str(i[0]) for i in sorted_scores]
 
     #print sorted(d_score_list.items(), key=operator.itemgetter(0))
     #print sorted_scores
-    #print "length of result: " + str(len(sorted_scores))
+    print "length of result: " + str(len(sorted_scores))
 
     # include the first position of query term as found in the posting for each doc
 
-    #database = sqlite3.connect(os.getcwd() + '/../../data/database.sqlite')
-    #cursor = database.cursor()
+    database = sqlite3.connect(os.getcwd() + '/../../data/database.sqlite')
+    cursor = database.cursor()
 
-    #result = []
-    #counter = 1
-    #for doc, weight in sorted_scores:
-    #    result.append([doc, first_pos[doc]])
-    #    cursor.execute("select title from papers where id=" + str(doc))
-    #    for row in cursor.fetchall():
-    #        print str(counter) + ". " + row[0] + ", score: " + str(weight)
-    #    counter += 1
+    result = []
+    counter = 1
+    for doc, weight in sorted_scores:
+        result.append([doc, first_pos[doc]])
+        cursor.execute("select title from papers where id=" + str(doc))
+        for row in cursor.fetchall():
+            print str(counter) + ". " + row[0] + ", score: " + str(weight)
+        counter += 1
 
-    #database.close()
+    database.close()
 
     #print result
 
@@ -184,6 +230,16 @@ if __name__ == "__main__":
 
     #print pp.pformat(test[0])
     #print pp.pformat(test[1])
-    index = Index()
-    VSMSearch("latent dirichlet")
-    VSMSearch("data mining")
+    index = Index()[0]
+    # pp.pprint( index["a"].keys() )
+    # VSMSearch("Latent Dirichlet")
+    print("----------")
+    a = {1: [1, 10, 20, 30], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
+    b = {1: [1, 11, 20, 31], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
+    print("A:")
+    pp.pprint(a)
+    print("B:")
+    pp.pprint(b)
+    r = merge(a, b)
+    print("result:", r)
+    print( GetQuotesExact("a major") )
