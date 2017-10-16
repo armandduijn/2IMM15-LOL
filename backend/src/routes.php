@@ -4,6 +4,15 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use App\Author\Model as Author;
 
+$app->get('/api/suggest', function (Request $request, Response $response, $args) {
+    $params = $request->getQueryParams();
+    $response = $response->withHeader('Content-type', 'application/json');
+    
+    $suggestions = new \App\Suggestion\Suggestion();
+    $response = $response->withJson($suggestions->giveSuggestions($params['q']));
+    return $response;
+});
+
 $app->get('/[{name}]', function ($request, $response, $args) {
     // Sample log message
     $this->logger->info("Slim-Skeleton '/' route");
