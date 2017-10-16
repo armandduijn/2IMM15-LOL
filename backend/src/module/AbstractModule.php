@@ -6,6 +6,8 @@ use Psr\Container\ContainerInterface;
 
 abstract class AbstractModule implements ContainerAwareInterface
 {
+    protected $title = 'Component';
+
     /**
      * @var
      */
@@ -26,5 +28,18 @@ abstract class AbstractModule implements ContainerAwareInterface
     protected function getContainer(): ContainerInterface
     {
         return $this->container;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
     }
 }
