@@ -1,6 +1,6 @@
 from pyparsing import Word, alphanums, Keyword, Group, Combine, Forward, Suppress, Optional, OneOrMore, oneOf, Literal, nums, ZeroOrMore
 from modules.stemming.porter2 import stem
-from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord
+from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord, VSMSearch
 from sets import Set
 import re
 
@@ -101,9 +101,13 @@ def stemQueryString(queryString):
 def Query(query):
     """
     Returns a set of documents from the index for a given boolean query.
+    Or return
     """
-    expr = Syntax()
-    return evaluate(expr.parseString(stemQueryString(query))[0])
+    if "or" in query.lower() or "and" in query.lower() or "not" in query.lower():
+        expr = Syntax()
+        return evaluate(expr.parseString(stemQueryString(query))[0])
+    else:
+        return VSMSearch(query)
 
 def PrintQueryTree(query):
     expr = Syntax()
@@ -111,4 +115,4 @@ def PrintQueryTree(query):
     return results.dump()
 
 if __name__ == "__main__":
-    print Query("finite and field")
+    print Query("data mining")
