@@ -62,15 +62,15 @@ def Index(file_dataset = "../../data/papers.csv", file_dump = "../../data/derive
 
         print "Dumping index..."
 
-        pickle.dump(collection,open(file_dump + "index.lol", "wb"))
+        pickle.dump(collection,open(file_dump + "index.lol", "wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
         print "Dumping idf..."
 
-        pickle.dump(idf, open(file_dump + "idf.lol", "wb"))
+        pickle.dump(idf, open(file_dump + "idf.lol", "wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
         print "Dumping doc_length..."
 
-        pickle.dump(docs, open(file_dump + "doc_length.lol", "wb"))
+        pickle.dump(docs, open(file_dump + "doc_length.lol", "wb"),protocol=pickle.HIGHEST_PROTOCOL)
 
     return [collection, idf, docs]
 
@@ -101,7 +101,7 @@ def VSMSearch(query):
     # this function returns the result based on vector space model
     # the result contains of doc ids sorted by similarity to query, and the first position of relevant token in doc
 
-    print "query: " + query
+    #print "query: " + query
 
     # get tokens from query
     q_grammar = Word(alphas)
@@ -110,7 +110,7 @@ def VSMSearch(query):
     for token, start, end in q_grammar.scanString(query):
         token = stem(str(token[0]).lower())
         token = unicode(token, "utf-8")
-        print "stemmed token: " + token
+        #print "stemmed token: " + token
         if q_tf.has_key(token):
             q_tf[token] += 1
         else:
@@ -148,26 +148,27 @@ def VSMSearch(query):
 
     # sort the results descendingly
     sorted_scores = sorted(d_score_list.items(), key=operator.itemgetter(1), reverse=True)
+    result = [str(i[0]) for i in sorted_scores]
 
     #print sorted(d_score_list.items(), key=operator.itemgetter(0))
     #print sorted_scores
-    print "length of result: " + str(len(sorted_scores))
+    #print "length of result: " + str(len(sorted_scores))
 
     # include the first position of query term as found in the posting for each doc
 
-    database = sqlite3.connect(os.getcwd() + '/../../data/database.sqlite')
-    cursor = database.cursor()
+    #database = sqlite3.connect(os.getcwd() + '/../../data/database.sqlite')
+    #cursor = database.cursor()
 
-    result = []
-    counter = 1
-    for doc, weight in sorted_scores:
-        result.append([doc, first_pos[doc]])
-        cursor.execute("select title from papers where id=" + str(doc))
-        for row in cursor.fetchall():
-            print str(counter) + ". " + row[0] + ", score: " + str(weight)
-        counter += 1
+    #result = []
+    #counter = 1
+    #for doc, weight in sorted_scores:
+    #    result.append([doc, first_pos[doc]])
+    #    cursor.execute("select title from papers where id=" + str(doc))
+    #    for row in cursor.fetchall():
+    #        print str(counter) + ". " + row[0] + ", score: " + str(weight)
+    #    counter += 1
 
-    database.close()
+    #database.close()
 
     #print result
 
@@ -183,5 +184,6 @@ if __name__ == "__main__":
 
     #print pp.pformat(test[0])
     #print pp.pformat(test[1])
-
-    VSMSearch("Latent Dirichlet")
+    index = Index()
+    VSMSearch("latent dirichlet")
+    VSMSearch("data mining")
