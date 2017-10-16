@@ -28,7 +28,11 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
     $collaborationModule = new \App\Author\Collaboration();
     $collaborationModule->setContainer($this);
 
-    $components[] = new \App\Author\Collaboration();
+    $similarityModule = new \App\Similarity\Similarity();
+    $similarityModule->setContainer($this);
+
+//    $components[] = new \App\Author\Collaboration();
+    $components[] = $similarityModule;
     $components[] = new \App\Results\Results();
 
     $data = [ 'authors' => [], 'collaborations' => [] ];
