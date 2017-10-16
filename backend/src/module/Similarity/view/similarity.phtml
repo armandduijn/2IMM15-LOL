@@ -4,7 +4,7 @@
             <li>
                 <a href="?i=author:<?= $result[0] ?>">
                     <?= $result[0] ?>
-                </a> <span class="text-muted">(<?= (float) $result[1] ?> %)</span>
+                </a> <span class="text-muted">(<?= round(((float) $result[1]) * 100) ?> %)</span>
             </li>
         <?php endforeach; ?>
     </ul>
