@@ -33,9 +33,17 @@ class Helper
      */
     public static function runOnServer(string $module, string $argument): array
     {
-        $response = file_get_contents(
-            sprintf('http://localhost:5000?module=%s&argument=%s', $module, $argument)
-        );
+        try {
+            $response = file_get_contents(
+                sprintf('http://localhost:5000?module=%s&argument=%s', $module, $argument)
+            );
+        } catch (\Exception $e) {
+            // noop
+        }
+
+        if (empty($response)) {
+            return [];
+        }
 
         return json_decode($response, true);
     }
