@@ -4,22 +4,33 @@ import pickle
 import csv
 from scipy import sparse
 from sklearn.metrics.pairwise import cosine_similarity
-import os
+
+MODULE_NAME = 'similarity'
+
+def register(container):
+    ''' Registers data to the static container '''
+
+    path = container['data_dir'] + '/derived/similarity.lol'
+
+    try:
+        container[MODULE_NAME] = pickle.load(open(path, 'rb'))
+    except Exception, e:
+        container[MODULE_NAME] = dict()
 
 def graph(g):
     if isinstance(g, Graph):
         return str(g.adjacency_list()) + '\n' + '\n' + str(g.matrix())
 
 def execute(container, author_id):
-    if 'ranked_similarity' in container:
-        ranked_similarity = container['ranked_similarity']
+    if MODULE_NAME in container:
+        ranked_similarity = container[MODULE_NAME]
 
         if author_id in ranked_similarity:
             return ranked_similarity[author_id]
 
         return []
     else:
-        with open(file_dump + 'collaboration-graph.csv') as csvfile:
+        with open(container['data_dir'] + '/collaboration-graph.csv') as csvfile:
             # print "Reading CSV..."
 
             readcsv = csv.reader(csvfile, delimiter=',')
@@ -54,7 +65,7 @@ def execute(container, author_id):
 
                 ranked_similarities[indices2[i]] = similarity[0:50]
 
-            pickle.dump(ranked_similarities, open(file_dump + 'similarity.lol', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(ranked_similarities, open(container['data_dir'] + '/similarity.lol', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
             print "Finished. Houdoe!"
 

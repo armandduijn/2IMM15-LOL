@@ -1,28 +1,32 @@
 import pickle
 import os
+import imp
+import sys
 
 def main():
     container = {}
 
-    # Load author similarities
-    container['ranked_similarity'] = load_dict('derived/similarity.lol')
+    # Store absolute path of data files
+    container['data_dir'] = os.path.abspath(os.path.join(os.getcwd(), '..', 'data'))
+
+    directories = filter(lambda x: os.path.isdir(x), os.listdir(os.getcwd()))
+
+    for directory in directories:
+        directory = os.path.abspath(directory)
+
+        if os.path.exists(directory + "/main.py"):
+            print("Found main.py in %s" % directory)
+
+            sys.path.append(directory)
+
+            module = imp.load_source('module.name', directory + "/main.py")
+
+            if hasattr(module, 'register'):
+                if hasattr(module, 'MODULE_NAME'):
+                    print("Importing '%s'..." % module.MODULE_NAME)
+
+                module.register(container);
+            else:
+                print("No register() function found")
 
     return container
-
-def load_dict(filename):
-    print "Importing '%s'..." % filename
-
-    path = get_path(filename)
-
-    try:
-        return pickle.load(open(path, 'rb'))
-    except Exception, e:
-        print str(e)
-
-        return dict()
-
-def get_path(filename):
-    cwd = os.path.dirname(__file__)
-
-    return os.path.abspath(os.path.join(cwd, '..', 'data', filename))
-

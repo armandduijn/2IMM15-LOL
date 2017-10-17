@@ -1,7 +1,6 @@
 from flask import Flask, abort, request, jsonify
 import os
 import sys
-
 import bootstrap
 
 # Load app
