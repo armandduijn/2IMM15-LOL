@@ -28,18 +28,11 @@ class Similarity extends AbstractModule implements RenderableInterface
      */
     public function render($data = []): string
     {
-        $output = Helper::runCommand('similarity.py', $this->getAuthorId());
-
-        $pattern = "/\('([0-9]+)', ([0|1].[0-9]+)\)/";
-        $results = [];
-
-        if (preg_match_all($pattern, $output, $matches)) {
-            $results = array_map(null, $matches[1], $matches[2]);
-        };
+        $output = Helper::runOnServer('similarity', $this->getAuthorId());
 
         // Limit the amount of results
         // The first result (100%) is the author himself.
-        $results = array_slice($results, 1, 5);
+        $results = array_slice($output, 1, 5);
 
         // Filter out irrelevant authors (below a threshold)
         $results = array_filter($results, function ($result) {
