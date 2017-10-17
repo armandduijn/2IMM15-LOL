@@ -10,18 +10,15 @@ def graph(g):
     if isinstance(g, Graph):
         return str(g.adjacency_list()) + '\n' + '\n' + str(g.matrix())
 
-def execute(author_id, file_dump = '/data/derived/'):
-    file_dump = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')) + file_dump
+def execute(container, author_id):
+    if 'ranked_similarity' in container:
+        ranked_similarity = container['ranked_similarity']
 
-    try:
-        with open(file_dump + 'similarity.lol', 'rb') as file:
-            ranked_similarities = pickle.load(file)
+        if author_id in ranked_similarity:
+            return ranked_similarity[author_id]
 
-            if author_id in ranked_similarities:
-                return ranked_similarities.get(author_id)
-            else:
-                return []
-    except:
+        return []
+    else:
         with open(file_dump + 'collaboration-graph.csv') as csvfile:
             # print "Reading CSV..."
 
