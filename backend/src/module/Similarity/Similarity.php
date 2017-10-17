@@ -3,32 +3,58 @@
 namespace App\Similarity;
 
 use App\AbstractModule;
+use App\Helper;
 use App\RenderableInterface;
 
 class Similarity extends AbstractModule implements RenderableInterface
 {
-    public function getTitle(): string
+    /**
+     * Author ID
+     *
+     * @var string
+     */
+    protected $authorId;
+
+    /**
+     * Similarity constructor.
+     */
+    public function __construct()
     {
-        return 'Similarity';
+        $this->setTitle('Similarity');
     }
 
+    /**
+     * @inheritdoc
+     */
     public function render($data = []): string
     {
-        $command = "python \"".getcwd()."/../../modules/view-helpers/query.py\" ";
-        $command .= escapeshellarg($_GET['i']);
-        //print($command);
-        //var_dump($command);
-        $output = shell_exec($command);
+        $output = Helper::runCommand('similarity.py', $this->getAuthorId());
 
-        $data = [
-            'output' => $output
-        ];
+        $pattern = "/\('([0-9]+)', ([0|1].[0-9]+)\)/";
+        $results = [];
 
-        ob_start();
+        if (preg_match_all($pattern, $output, $matches)) {
+            $results = array_map(null, $matches[1], $matches[2]);
+        };
 
-        extract($data);
-        include __DIR__ . '/view/similarity.phtml';
+        return Helper::render(__DIR__ . '/view/similarity.phtml', [
+            'results' => $results
+        ]);
+    }
 
-        return ob_get_clean();
+    /**
+     * @return string
+     */
+    public function getAuthorId(): string
+    {
+        return $this->authorId;
+    }
+
+    /**
+     * @param string $authorId
+     */
+    public function setAuthorId(string $authorId)
+    {
+        $this->authorId = $authorId;
     }
 }

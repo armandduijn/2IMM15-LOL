@@ -1,6 +1,11 @@
-<?php
-/** @var \App\Author\Model[] $authors */
-/** @var \App\Paper\Model[] $collaborations */
-?>
-<p class="card-text">Bla
+<p class="card-text">
+    <ul>
+        <?php foreach($results as $result): ?>
+            <li>
+                <a href="?i=author:<?= $result[0] ?>">
+                    <?= $result[0] ?>
+                </a> <span class="text-muted">(<?= round(((float) $result[1]) * 100) ?> %)</span>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 </p>

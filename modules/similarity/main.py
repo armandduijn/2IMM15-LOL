@@ -4,12 +4,15 @@ import pickle
 import csv
 from scipy import sparse
 from sklearn.metrics.pairwise import cosine_similarity
+import os
 
 def graph(g):
     if isinstance(g, Graph):
         return str(g.adjacency_list()) + '\n' + '\n' + str(g.matrix())
 
-def execute(author_id, file_dump = '../../data/derived/'):
+def execute(author_id, file_dump = '/data/derived/'):
+    file_dump = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')) + file_dump
+
     try:
         with open(file_dump + 'similarity.lol', 'rb') as file:
             ranked_similarities = pickle.load(file)
