@@ -6,6 +6,7 @@ require_once(__DIR__."/../Stemming/Porter.php");
 
 use App\AbstractModule;
 use App\RenderableInterface;
+use App\Helper;
 use PDO;
 use App\Stemming\Porter2 as Porter;
 
@@ -22,10 +23,7 @@ class Suggestion extends AbstractModule
         $lastWord = array_pop($pieces);
         
         // correct last word
-        $command = "python \"" . __DIR__ . "/../../../../modules/view-helpers/spelling.py\" ";
-        $command .= escapeshellarg($lastWord);
-        $correctedLastWord = trim(shell_exec($command));
-//        var_dump($correctedLastWord);die;
+        $correctedLastWord = Helper::runOnServer('spelling', $lastWord, false);
         
         $stem = Porter::stem($correctedLastWord);
         
@@ -35,7 +33,7 @@ class Suggestion extends AbstractModule
         $suggestions = [];
         
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-            $suggestions[] = join(" ", $pieces)." ".$correctedLastWord." ".$row['suggestion'];
+            $suggestions[] = trim(join(" ", $pieces)." ".$correctedLastWord." ".$row['suggestion']);
         }
         
         return $suggestions;
