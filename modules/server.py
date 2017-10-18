@@ -4,6 +4,9 @@ import sys
 import imp
 import bootstrap
 
+# Special for Windows users...
+sys.path.append(os.path.join(os.getcwd(), ".."))
+
 # Load app
 app = Flask(__name__)
 
