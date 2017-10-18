@@ -1,26 +1,33 @@
-import time
+from collections import Counter
 from nltk.tokenize import word_tokenize
 
-corpus = {}
+MODULE_NAME = 'spelling'
 
-def getCorpus():
-    global corpus
-    return corpus
-    #corpus.words = WRD
+WORDS = Counter("")
 
 def words(text):
     return word_tokenize(text.lower())
 
-def P(word, N=sum(getCorpus().values())):
-    "Probability of `word`."
-    return corpus.words[word] / N
+def register(container):
+    path = container['data_dir'] + '/papers.csv'
+    container[MODULE_NAME] = Counter(words(open(path).read()))
 
-def correction(wrd, word):
+def execute(container, argument):
+    global WORDS
+    WORDS = container[MODULE_NAME]
+    if 'data_dir' in container:
+        return correction(argument)
+    else:
+        raise Exception("data_dir was not in container")
+
+def P(word, N=sum(WORDS.values())):
+    "Probability of `word`."
+    if N == 0:
+        N = sum(WORDS.values())
+    return WORDS[word] / N
+
+def correction(word):
     "Most probable spelling correction for word."
-    # set the corpus
-    return len(wrd)
-    global corpus
-    corpus = wrd
     return max(candidates(word), key=P)
 
 def candidates(word):
@@ -29,7 +36,7 @@ def candidates(word):
 
 def known(words):
     "The subset of `words` that appear in the dictionary of WORDS."
-    return set(w for w in words if w in getCorpus())
+    return set(w for w in words if w in WORDS)
 
 def edits1(word):
     "All edits that are one edit away from `word`."

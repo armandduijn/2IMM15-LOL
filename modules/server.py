@@ -1,6 +1,7 @@
 from flask import Flask, abort, request, jsonify
 import os
 import sys
+import imp
 import bootstrap
 
 # Load app
@@ -22,8 +23,10 @@ def hello():
     if os.path.isdir(module_dir):
         sys.path.append(module_dir)
 
-        main = __import__('main')
-        output =  main.execute(container, argument)
+        #main = __import__('main')
+        #output =  main.execute(container, argument)
+        module = imp.load_source('module.name', module_dir + "/main.py")
+        output = module.execute(container, argument)
 
         if type(output) is dict or type(output) is list:
             return jsonify(output)
@@ -37,4 +40,5 @@ def get_path(filename):
 
     return os.path.abspath(os.path.join(cwd, '..', 'modules', filename))
 
-
+if __name__ == '__main__':
+    app.run(debug=True)
