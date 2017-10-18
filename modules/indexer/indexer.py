@@ -54,8 +54,8 @@ def Index(file_dataset = "../../data/papers.csv", file_dump = "../../data/derive
                     token_pos += 1
                     collection[token][id].append(token_pos)
                 doc_nr += 1
-                if doc_nr > 10:
-                    break
+                # if doc_nr > 10:
+                #     break
 
         print "Calculating idf..."
 
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     #print pp.pformat(test[0])
     #print pp.pformat(test[1])
     index = Index()[0]
-    VSMSearch("Latent Dirichlet")
+    # VSMSearch("Latent Dirichlet")
     print("----------")
     a = {1: [1, 10, 20, 30], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
     b = {1: [1, 11, 20, 31], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
