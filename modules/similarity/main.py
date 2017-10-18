@@ -4,25 +4,33 @@ import pickle
 import csv
 from scipy import sparse
 from sklearn.metrics.pairwise import cosine_similarity
-import os
+
+MODULE_NAME = 'similarity'
+
+def register(container):
+    ''' Registers data to the static container '''
+
+    path = container['data_dir'] + '/derived/similarity.lol'
+
+    try:
+        container[MODULE_NAME] = pickle.load(open(path, 'rb'))
+    except Exception, e:
+        container[MODULE_NAME] = dict()
 
 def graph(g):
     if isinstance(g, Graph):
         return str(g.adjacency_list()) + '\n' + '\n' + str(g.matrix())
 
-def execute(author_id, file_dump = '/data/derived/'):
-    file_dump = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')) + file_dump
+def execute(container, author_id):
+    if MODULE_NAME in container:
+        ranked_similarity = container[MODULE_NAME]
 
-    try:
-        with open(file_dump + 'similarity.lol', 'rb') as file:
-            ranked_similarities = pickle.load(file)
+        if author_id in ranked_similarity:
+            return ranked_similarity[author_id]
 
-            if author_id in ranked_similarities:
-                return ranked_similarities.get(author_id)
-            else:
-                return []
-    except:
-        with open(file_dump + 'collaboration-graph.csv') as csvfile:
+        return []
+    else:
+        with open(container['data_dir'] + '/collaboration-graph.csv') as csvfile:
             # print "Reading CSV..."
 
             readcsv = csv.reader(csvfile, delimiter=',')
@@ -57,7 +65,7 @@ def execute(author_id, file_dump = '/data/derived/'):
 
                 ranked_similarities[indices2[i]] = similarity[0:50]
 
-            pickle.dump(ranked_similarities, open(file_dump + 'similarity.lol', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(ranked_similarities, open(container['data_dir'] + '/similarity.lol', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
             print "Finished. Houdoe!"
 

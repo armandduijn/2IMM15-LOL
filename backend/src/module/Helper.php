@@ -25,6 +25,30 @@ class Helper
     }
 
     /**
+     * Runs a Python module
+     *
+     * @param string $module
+     * @param string $argument
+     * @return array
+     */
+    public static function runOnServer(string $module, string $argument): array
+    {
+        try {
+            $response = file_get_contents(
+                sprintf('http://localhost:5000?module=%s&argument=%s', $module, $argument)
+            );
+        } catch (\Exception $e) {
+            // noop
+        }
+
+        if (empty($response)) {
+            return [];
+        }
+
+        return json_decode($response, true);
+    }
+
+    /**
      * Render a template
      *
      * @param string $template Absolute path to the template file
