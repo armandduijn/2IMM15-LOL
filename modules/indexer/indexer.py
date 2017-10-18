@@ -103,9 +103,8 @@ def GetQuotesExact(search_string):
     for sw in search_words:
         # If one/more words not in index, return empty result set
         if sw not in index:
-            return Set()
+            return dict()
 
-    result = Set()
     posting_list = index[search_words[1]]
     for sw in search_words[1:]:
         posting_list = merge(index[sw], posting_list, 1)
@@ -231,8 +230,7 @@ if __name__ == "__main__":
     #print pp.pformat(test[0])
     #print pp.pformat(test[1])
     index = Index()[0]
-    # pp.pprint( index["a"].keys() )
-    # VSMSearch("Latent Dirichlet")
+    VSMSearch("Latent Dirichlet")
     print("----------")
     a = {1: [1, 10, 20, 30], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
     b = {1: [1, 11, 20, 31], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
@@ -242,4 +240,5 @@ if __name__ == "__main__":
     pp.pprint(b)
     r = merge(a, b)
     print("result:", r)
-    print( GetQuotesExact("a major") )
+    print("-------------")
+    print( GetQuotesExact("a mean value") )
