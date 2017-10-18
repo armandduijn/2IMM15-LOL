@@ -1,5 +1,5 @@
 from pyparsing import *
-from stemming.porter2 import stem
+from modules.stemming.porter2 import stem
 import csv
 import cPickle as pickle
 import os

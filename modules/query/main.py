@@ -1,9 +1,8 @@
+import re
 from pyparsing import Word, alphanums, Keyword, Group, Combine, Forward, Suppress, Optional, OneOrMore, oneOf, Literal, nums, ZeroOrMore
 from modules.stemming.porter2 import stem
 from modules.indexer.indexer import GetWord, GetNot, GetQuotesExact, GetWordWildcard, GetWord, Search, GetPapersBy, GetPapersIn
 from sets import Set
-import re
-
 
 def execute(container, query):
     return Query(query, container)
