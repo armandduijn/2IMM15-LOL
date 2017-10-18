@@ -21,9 +21,14 @@ def register(container):
 def execute(container, dataType):
     if MODULE_NAME in container:
         array = container[MODULE_NAME]
+        dataType = str(dataType)
 
-        if str(dataType).startswith("index"):
-            return array
+        if dataType.startswith("index"):
+            terms = dataType.split("_")[1:]
+            result = {}
+            for t in terms:
+                result[t] = array[0][t]
+            return result
         elif dataType == "idf":
             return array[1]
         elif dataType == "doc_length":

@@ -1,5 +1,5 @@
 from pyparsing import *
-from modules.stemming.porter2 import stem
+from stemming.porter2 import stem
 import csv
 import cPickle as pickle
 import os
@@ -23,10 +23,15 @@ file_dump = "../../data/derived/"
 def Index(file_dataset = "../../data/papers.csv", file_dump = "../../data/derived/", id_col = 0, text_col = -1, title_col = 2):
 
     try:
+        print "loading index..."
         collection = pickle.load(open(file_dump + "index.lol", "rb"))
+        print "loading idf..."
         idf = pickle.load(open(file_dump + "idf.lol", "rb"))
+        print "loading doc_length..."
         docs = pickle.load(open(file_dump + "doc_length.lol", "rb"))
-        #print "Retrieved index from file " + file_dump
+        print "Retrieved index from file " + file_dump
+        print "Returning objects"
+        return [collection, idf, docs]
     except:
         collection = defaultdict(functools.partial(defaultdict, list))
         doc_nr = 0
@@ -83,7 +88,7 @@ def Index(file_dataset = "../../data/papers.csv", file_dump = "../../data/derive
 
         pickle.dump(docs, open(file_dump + "doc_length.lol", "wb"), pickle.HIGHEST_PROTOCOL)
 
-    return [collection, idf, docs]
+        return [collection, idf, docs]
 
 def CreateDbIndex():
     arr = Index()

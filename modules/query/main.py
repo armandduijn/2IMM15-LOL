@@ -4,6 +4,10 @@ from modules.indexer.indexer import GetWord, GetNot, GetQuotesExact, GetWordWild
 from sets import Set
 import re
 
+
+def execute(container, query):
+    return Query(query, container)
+
 def Syntax():
     operatorOr = Forward()
 
@@ -98,7 +102,7 @@ def stemQueryString(queryString):
     queryString = re.sub(r'([a-zA-Z]*)', stemWord, queryString)
     return queryString
 
-def Query(query):
+def Query(query, container):
     """
     Returns a set of documents from the index for a given boolean query.
     Or return

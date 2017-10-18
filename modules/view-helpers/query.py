@@ -4,7 +4,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 #print os.path.dirname(__file__)
-from modules.query.query import Query
+from modules.query.main import Query
 
 """
 This script takes as argument a query string with possibly boolean expressions.
