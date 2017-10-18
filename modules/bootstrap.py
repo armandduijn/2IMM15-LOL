@@ -25,8 +25,8 @@ def main():
                 if hasattr(module, 'MODULE_NAME'):
                     print("Importing '%s'..." % module.MODULE_NAME, color='green')
 
-                # module.register(container);
+                module.register(container);
             else:
-                print("No register() function found", color='yellow')
+                print("No register() function found in '%s/main.py'" % directory, color='yellow')
 
     return container
