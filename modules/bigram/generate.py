@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -35,18 +36,16 @@ def map():
                words = [i for i in words if i not in stop and not any((c.isdigit() or c in string.punctuation) for c in i) and not len(i) == 1]
                for first, second in zip(words, words[1:]):
                    sFirst = stem(first)
-                   print sFirst, second, 1
+                   print(sFirst, second, 1)
     return True
 
 def reduce():
-    # !/usr/bin/env python
 
     from operator import itemgetter
     import sys
 
     current_word = None
     current_count = 0
-    word = None
 
     # input comes from STDIN
     for line in sys.stdin:
@@ -66,18 +65,18 @@ def reduce():
 
         # this IF-switch only works because Hadoop sorts map output
         # by key (here: word) before it is passed to the reducer
-        if current_word == word1:
+        if current_word == word1+"."+word2:
             current_count += count
         else:
             if current_word:
                 # write result to STDOUT
-                print current_word, word2, current_count
+                print(word1, word2, current_count, sep='\t')
             current_count = count
-            current_word = word1
+            current_word = word1+"."+word2
 
     # do not forget to output the last word if needed!
-    if current_word == word1:
-        print current_word, word2, current_count
+    if current_word == word1+"."+word2:
+        print(word1, word2, current_count, sep='\t')
 
 
 if __name__ == "__main__":
