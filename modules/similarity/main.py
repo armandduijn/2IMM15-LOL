@@ -30,7 +30,7 @@ def execute(container, author_id):
 
         return []
     else:
-        with open(container['data_dir'] + '/collaboration-graph.csv') as csvfile:
+        with open(container['data_dir'] + '/derived/collaboration-graph.csv') as csvfile:
             # print "Reading CSV..."
 
             readcsv = csv.reader(csvfile, delimiter=',')
