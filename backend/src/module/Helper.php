@@ -31,7 +31,7 @@ class Helper
      * @param string $argument
      * @return array
      */
-    public static function runOnServer(string $module, string $argument): array
+    public static function runOnServer(string $module, string $argument, bool $json = true)
     {
         try {
             $response = file_get_contents(
@@ -45,7 +45,11 @@ class Helper
             return [];
         }
 
-        return json_decode($response, true);
+        if ($json) {
+            return json_decode($response, true);
+        } else {
+            return $response;
+        }
     }
 
     /**

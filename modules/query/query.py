@@ -1,6 +1,6 @@
 from pyparsing import Word, alphanums, Keyword, Group, Combine, Forward, Suppress, Optional, OneOrMore, oneOf, Literal, nums, ZeroOrMore
 from modules.stemming.porter2 import stem
-from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord, VSMSearch
+from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord, Search
 from sets import Set
 import re
 
@@ -107,7 +107,7 @@ def Query(query):
         expr = Syntax()
         return evaluate(expr.parseString(stemQueryString(query))[0])
     else:
-        return VSMSearch(query)
+        return Search(query)
 
 def PrintQueryTree(query):
     expr = Syntax()
