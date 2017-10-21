@@ -1,0 +1,11 @@
+<div class="card-text">
+    <ul>
+        <?php foreach($results as $result): ?>
+            <li>
+                <a href="?i=author:<?= $result[0] ?>">
+                    <?= $result[2] ?>
+                </a> <span class="text-muted">(<?= round(((float) $result[1]) * 100) ?> %)</span>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</div>

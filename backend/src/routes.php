@@ -1,8 +1,22 @@
 <?php
 
+use App\Author\Collaboration as CollaborationComponent;
+use App\Similarity\Similarity as SimilarityComponent;
+use App\Container;
+use App\Helper;
+use App\Results\Results as ResultsComponent;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use App\Author\Model as Author;
+
+$app->get('/api/suggest', function (Request $request, Response $response, $args) {
+    $params = $request->getQueryParams();
+    $response = $response->withHeader('Content-type', 'application/json');
+    
+    $suggestions = new \App\Suggestion\Suggestion();
+    $response = $response->withJson($suggestions->giveSuggestions($params['q']));
+    return $response;
+});
 
 $app->get('/[{name}]', function ($request, $response, $args) {
     // Sample log message
@@ -15,39 +29,41 @@ $app->get('/[{name}]', function ($request, $response, $args) {
 
 $app->get('/input/', function (Request $request, Response $response, $args) {
     $params = $request->getQueryParams();
-
     $input = $params['i'] ?? null;
-    $command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
-    $command .= escapeshellarg($_GET['i']);
-    $stemmed = shell_exec($command);
 
     if (is_null($input) || empty($input)) {
         return $response->withRedirect('/');
     }
 
-    $collaborationModule = new \App\Author\Collaboration();
-    $collaborationModule->setContainer($this);
+    Container::setContainer($this);
 
-    $components[] = new \App\Author\Collaboration();
-    $components[] = new \App\Results\Results();
+    $components = [];
 
-    $data = [ 'authors' => [], 'collaborations' => [] ];
+    // If `author:$id` is found in the input
+    if (preg_match('/author:([0-9]+)/', $input, $matches)) {
+        $component = new SimilarityComponent();
+        $component->setAuthorId($matches[1]);
 
-    $author = new Author();
-    $author->setContainer($this);
-    $author->loadByName('Tomaso Poggio');
+        $components[] = $component;
+    }
 
-    $author2 = new Author();
-    $author2->setContainer($this);
-    $author2->loadByName('Thomas Serre');
+    // If some condition is met
+    if (false) {
+        $component = new CollaborationComponent();
 
-    $author3 = new Author();
-    $author3->setContainer($this);
-    $author3->loadByName('Massimiliano Pontil');
+        $components[] = $component;
+    }
+
+    // If some condition is met
+    if (true) {
+        $component = new ResultsComponent();
+
+        $components[] = $component;
+    }
 
     return $this->renderer->render($response, 'input.phtml', [
-        'input'      => $input,
-        'stemmedInput' => $stemmed,
-        'components' => $components
+        'input'        => $input,
+        'stemmedInput' => Helper::runCommand('stem.py', $input),
+        'components'   => $components,
     ]);
 });

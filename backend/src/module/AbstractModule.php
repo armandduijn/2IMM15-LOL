@@ -4,27 +4,28 @@ namespace App;
 
 use Psr\Container\ContainerInterface;
 
-abstract class AbstractModule implements ContainerAwareInterface
+abstract class AbstractModule
 {
-    /**
-     * @var
-     */
-    private $container;
-
-    /**
-     * @param ContainerInterface|null $container
-     * @return void
-     */
-    public function setContainer(ContainerInterface $container = null): void
-    {
-        $this->container = $container;
-    }
+    protected $title = 'Component';
 
     /**
      * @return ContainerInterface
      */
     protected function getContainer(): ContainerInterface
     {
-        return $this->container;
+        return Container::getContainer();
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
     }
 }
