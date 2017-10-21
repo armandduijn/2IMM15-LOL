@@ -192,7 +192,7 @@ def GetQuotesExact(search_string):
 
     posting_list = index[search_words[0]]
     for sw in search_words[1:]:
-        posting_list = merge(index[sw], posting_list, 1)
+        posting_list = merge(posting_list, index[sw], 1)
     return posting_list
 
 def merge(posting_list1, posting_list2, k=1):
