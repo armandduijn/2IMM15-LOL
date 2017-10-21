@@ -190,7 +190,7 @@ def GetQuotesExact(search_string):
         if sw not in index:
             return dict()
 
-    posting_list = index[search_words[1]]
+    posting_list = index[search_words[0]]
     for sw in search_words[1:]:
         posting_list = merge(index[sw], posting_list, 1)
     return posting_list
