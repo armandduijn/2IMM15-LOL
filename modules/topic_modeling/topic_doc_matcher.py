@@ -1,5 +1,6 @@
 #####this is for calculating the LDA model using the dictionary and the corpus from tryabstract.py and match topic-document####
-####t
+####input file: dictionary , corpus
+####output file: lda model file, topic_wordlist.txt,  docidtokens.txt , docid_topicid.txt,   topicid_docid.txt'
 import gensim
 import json
 import warnings
@@ -12,15 +13,14 @@ import pickle
 from nltk.corpus import stopwords
 
 ##### downloading the dictionary and corpus#####
-number_of_topics = 50 ## this is a number verified by perplexity
+number_of_topics = 10 ## this is a number verified by perplexity
 dictionary = gensim.corpora.Dictionary.load('./topics/alltoken.dict')
 corpus = gensim.corpora.MmCorpus('./topics/corpus.mm')
 
 tfidf = gensim.models.TfidfModel(corpus)
 corpus_tfidf = tfidf[corpus]
 model = gensim.models.LdaModel(corpus=corpus_tfidf, id2word=dictionary, iterations=100, num_topics=number_of_topics)  # try with title, no ptfidf
-model.save('./topics/lad_topic%d.lda' % number_of_topics)
-
+model.save('./topics/lda_topic%d.lda' % number_of_topics)
 
 ###getting the word id and the probabilities####
 topic_words = {}
@@ -29,12 +29,12 @@ for topic in range(0, number_of_topics):
     # save top 10 words for one certain topic
     topic_words[topic] = model.get_topic_terms(topic, words_per_topic)
 
-####getting the id2token mapping so we can know the actuall words
+####getting the id2token mapping so we can know the actual words
 topic_wordlist = {}
-wordlist = {}
 topic_id = -1
 for topic in topic_words.keys():
     topic_id += 1
+    wordlist = {}
     tupleArray = topic_words[topic]
     for wordid, score in tupleArray:
         word = model.id2word.id2token[wordid]

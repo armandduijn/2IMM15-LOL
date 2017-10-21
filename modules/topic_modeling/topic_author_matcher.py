@@ -2,10 +2,11 @@ import gensim
 import json
 import csv
 import os
-
+### input file: topicid_docid.txt',docid_topicid.txt, database(doc_author.csv)
+### output file: authorid_topics.txt, topicid_authors.txt, authorid_docs.txt,  docid_authors.txt
 with open("./topics/docid_topicid.txt",'r') as f:
     docid_topics = json.load(f)
-    print type(docid_topics)
+    #print type(docid_topics)
 with open("./topics/topicid_docid.txt", 'r') as f:
     topicid_docs = json.load(f)
 
