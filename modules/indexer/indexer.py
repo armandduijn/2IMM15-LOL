@@ -151,6 +151,15 @@ def GetPapersBy(authorid):
             result.append(row[0])
     return result
 
+def GetPapersIn(year):
+    result = []
+    with sqlite3.connect(os.getcwd() + '/../../data/database.sqlite') as database:
+        cursor = database.cursor()
+        cursor.execute("select id from papers where year=" + year)
+        for row in cursor.fetchall():
+            result.append(row[0])
+    return result
+
 def GetWord(word):
     #index = Index()[0]
     index = GetDbPostings([word])

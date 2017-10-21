@@ -1,6 +1,6 @@
 from pyparsing import Word, alphanums, Keyword, Group, Combine, Forward, Suppress, Optional, OneOrMore, oneOf, Literal, nums, ZeroOrMore
 from modules.stemming.porter2 import stem
-from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord, Search, GetPapersBy
+from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord, Search, GetPapersBy, GetPapersIn
 from sets import Set
 import re
 
@@ -106,6 +106,9 @@ def Query(query):
     if query.startswith("author:"):
         authorid = query[7:]
         return GetPapersBy(authorid)
+    elif query.startswith("year:"):
+        year = query[5:]
+        return GetPapersIn(year)
     elif " or " in query.lower() or " and " in query.lower() or " not " in query.lower():
         expr = Syntax()
         return evaluate(expr.parseString(stemQueryString(query))[0])
