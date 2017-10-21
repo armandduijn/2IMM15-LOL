@@ -12,4 +12,4 @@ The result is a comma-separated list of the indices of the documents that match 
 """
 
 documents = Query(sys.argv[1])
-print ','.join(documents)
+print ','.join(str(x) for x in documents)

@@ -142,6 +142,15 @@ def GetDbDocs(terms):
     docs = pickle.load(open(file_dump + "doc_length.lol", "rb"))
     return docs
 
+def GetPapersBy(authorid):
+    result = []
+    with sqlite3.connect(os.getcwd() + '/../../data/database.sqlite') as database:
+        cursor = database.cursor()
+        cursor.execute("select paper_id from paper_authors where author_id='" + authorid + "'")
+        for row in cursor.fetchall():
+            result.append(row[0])
+    return result
+
 def GetWord(word):
     #index = Index()[0]
     index = GetDbPostings([word])
@@ -315,55 +324,79 @@ if __name__ == "__main__":
     #
     # print len(result)
 
-    with open("test.txt", "a") as resultfile:
-        # resultfile.writelines("type: Positional Boolean, query: Latent Dirichlet\n")
-        # result = GetQuotesExact("latent dirichlet")
-        # counter = 1
-        # for doc in result:
-        #     cursor.execute("select title from papers where id=" + str(doc))
-        #     for row in cursor.fetchall():
-        #         if counter <= 21:
-        #             print str(counter) + ". " + row[0]
-        #             resultfile.writelines(str(counter) + ". " + row[0])
-        #         else:
-        #             break
-        #     counter += 1
-        resultfile.writelines("type: VSM, query: Latent Dirichlet\n")
-        result = Search("Latent Dirichlet", "VSM")
-        counter = 1
-        for doc in result:
-            cursor.execute("select title from papers where id=" + str(doc))
-            for row in cursor.fetchall():
-                if counter <= 21:
-                    print str(counter) + ". " + row[0]
-                    resultfile.writelines(str(counter) + ". " + row[0])
-                else:
-                    break
-            counter += 1
-        resultfile.writelines("type: BM25, query: Latent Dirichlet\n")
-        result = Search("Latent Dirichlet", "BM25")
-        counter = 1
-        for doc in result:
-            cursor.execute("select title from papers where id=" + str(doc))
-            for row in cursor.fetchall():
-                if counter <= 21:
-                    print str(counter) + ". " + row[0]
-                    resultfile.writelines(str(counter) + ". " + row[0])
-                else:
-                    break
-            counter += 1
-
-        #Search("Deep Learning", "VSM")
-        #Search("Deep Learning", "BM25")
-        #print("----------")
-        #a = {1: [1, 10, 20, 30], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
-        #b = {1: [1, 11, 20, 31], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
-        #print("A:")
-        #pp.pprint(a)
-        #print("B:")
-        #pp.pprint(b)
-        #r = merge(a, b)
-        #print("result:", r)
-        #print("-------------")
-
-    database.close()
+    # with open("test.txt", "a") as resultfile:
+    #     # resultfile.writelines("type: Positional Boolean, query: Latent Dirichlet\n")
+    #     # result = GetQuotesExact("latent dirichlet")
+    #     # counter = 1
+    #     # for doc in result:
+    #     #     cursor.execute("select title from papers where id=" + str(doc))
+    #     #     for row in cursor.fetchall():
+    #     #         if counter <= 21:
+    #     #             print str(counter) + ". " + row[0]
+    #     #             resultfile.writelines(str(counter) + ". " + row[0])
+    #     #         else:
+    #     #             break
+    #     #     counter += 1
+    #     resultfile.writelines("type: VSM, query: Latent Dirichlet\n")
+    #     result = Search("Latent Dirichlet", "VSM")
+    #     counter = 1
+    #     for doc in result:
+    #         cursor.execute("select title from papers where id=" + str(doc))
+    #         for row in cursor.fetchall():
+    #             if counter <= 21:
+    #                 print str(counter) + ". " + row[0]
+    #                 resultfile.writelines(str(counter) + ". " + row[0] + "\n")
+    #             else:
+    #                 break
+    #         counter += 1
+    #     resultfile.writelines("type: BM25, query: Latent Dirichlet\n")
+    #     result = Search("Latent Dirichlet", "BM25")
+    #     counter = 1
+    #     for doc in result:
+    #         cursor.execute("select title from papers where id=" + str(doc))
+    #         for row in cursor.fetchall():
+    #             if counter <= 21:
+    #                 print str(counter) + ". " + row[0]
+    #                 resultfile.writelines(str(counter) + ". " + row[0] + "\n")
+    #             else:
+    #                 break
+    #         counter += 1
+    #     resultfile.writelines("type: VSM, query: Relevance Feedback\n")
+    #     result = Search("Relevance Feedback", "VSM")
+    #     counter = 1
+    #     for doc in result:
+    #         cursor.execute("select title from papers where id=" + str(doc))
+    #         for row in cursor.fetchall():
+    #             if counter <= 21:
+    #                 print str(counter) + ". " + row[0]
+    #                 resultfile.writelines(str(counter) + ". " + row[0] + "\n")
+    #             else:
+    #                 break
+    #         counter += 1
+    #     resultfile.writelines("type: BM25, query: Relevance Feedback\n")
+    #     result = Search("Relevance Feedback", "BM25")
+    #     counter = 1
+    #     for doc in result:
+    #         cursor.execute("select title from papers where id=" + str(doc))
+    #         for row in cursor.fetchall():
+    #             if counter <= 21:
+    #                 print str(counter) + ". " + row[0]
+    #                 resultfile.writelines(str(counter) + ". " + row[0] + "\n")
+    #             else:
+    #                 break
+    #         counter += 1
+    #
+    #     #Search("Deep Learning", "VSM")
+    #     #Search("Deep Learning", "BM25")
+    #     #print("----------")
+    #     #a = {1: [1, 10, 20, 30], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
+    #     #b = {1: [1, 11, 20, 31], 2:[1, 15, 16, 17], 3:[4, 17, 19, 80]}
+    #     #print("A:")
+    #     #pp.pprint(a)
+    #     #print("B:")
+    #     #pp.pprint(b)
+    #     #r = merge(a, b)
+    #     #print("result:", r)
+    #     #print("-------------")
+    #
+    # database.close()
