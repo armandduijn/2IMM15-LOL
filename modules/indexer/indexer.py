@@ -12,6 +12,7 @@ from collections import defaultdict
 import functools
 import pprint
 
+from collections import OrderedDict
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -179,7 +180,9 @@ def GetWordWildcard(word):
 """
 *Assuming query is already stemmed*
 Usage:
-    GetQuotesExact("a big cake", ???)
+    GetQuotesExact("a big cake")
+Output:
+    List of documents, containing the exact phrase, ranked by the number of phrases contained by the
 """
 
 def GetQuotesExact(search_string):
@@ -187,26 +190,30 @@ def GetQuotesExact(search_string):
     search_words = search_string.split(" ")
     for sw in search_words:
         # If one/more words not in index, return empty result set
+        # print "Index of {} is {}".format(sw, dict(index[sw]))
         if sw not in index:
-            return dict()
-
-    posting_list = index[search_words[1]]
+            return []
+    posting_list = index[search_words[0]]
     for sw in search_words[1:]:
-        posting_list = merge(index[sw], posting_list, 1)
-    return posting_list
+        posting_list = merge(posting_list, index[sw], 1)
+    # Sort docs based on number of matches
+    ranked_docs = OrderedDict(sorted(posting_list.viewitems(), key=lambda x: len(x[1])))
+    print "Merged indices: ", pp.pformat(posting_list)
+    result = list(reversed(ranked_docs))
+    return result
 
 def merge(posting_list1, posting_list2, k=1):
-    merged_list = []
+    merged_list = {}
     intersected_docIDs = sorted(set(posting_list1.keys()) & set(posting_list2.keys()))
-    print intersected_docIDs
+    print "Potential document IDs: ", intersected_docIDs
     for docID in intersected_docIDs:
         positions1 = posting_list1[docID]
         positions2 = posting_list2[docID]
         i = j = 0
         res = []
-        # print docID, positions1, (positions2)
+        # print "docID = {}, positions1 = {}, positions2 = {}".format(docID, positions1, positions2)
         while i < len(positions1) and j < len(positions2):
-            # print "comparing {}, and {} from document {}".format(positions1[i], positions2[j, docID)
+            # print "comparing {}, and {} from document {}".format(positions1[i], positions2[j], docID)
             if (positions1[i] + k == positions2[j]):
                 res.append(positions2[j])
                 i = i + 1
@@ -216,7 +223,7 @@ def merge(posting_list1, posting_list2, k=1):
             else:
                 j = j + 1
         if(res != []):
-            merged_list.append({docID : res})
+            merged_list[docID] = res
     return merged_list
 
 def GetQuotes(search_string, tmp_result):
@@ -332,7 +339,7 @@ if __name__ == "__main__":
     # result = Search("data mining", "VSM")
     #
     # print len(result)
-
+    #
     # with open("test.txt", "a") as resultfile:
     #     # resultfile.writelines("type: Positional Boolean, query: Latent Dirichlet\n")
     #     # result = GetQuotesExact("latent dirichlet")
