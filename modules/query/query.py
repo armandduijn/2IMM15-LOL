@@ -1,6 +1,6 @@
 from pyparsing import Word, alphanums, Keyword, Group, Combine, Forward, Suppress, Optional, OneOrMore, oneOf, Literal, nums, ZeroOrMore
 from modules.stemming.porter2 import stem
-from modules.indexer.indexer import GetWord, GetNot, GetQuotes, GetWordWildcard, GetWord, Search, GetPapersBy, GetPapersIn
+from modules.indexer.indexer import GetWord, GetNot, GetQuotesExact, GetWordWildcard, GetWord, Search, GetPapersBy, GetPapersIn
 from sets import Set
 import re
 
@@ -68,7 +68,7 @@ def evaluateQuotes(argument):
             r = evaluate(item)
         else:
             r = r.intersection(evaluate(item))
-    return GetQuotes(' '.join(search_terms), r)
+    return GetQuotesExact(' '.join(search_terms))
 
 def evaluateWord(argument):
     return GetWord(argument[0])
@@ -109,7 +109,7 @@ def Query(query):
     elif query.startswith("year:"):
         year = query[5:]
         return GetPapersIn(year)
-    elif " or " in query.lower() or " and " in query.lower() or " not " in query.lower():
+    elif " or " in query.lower() or " and " in query.lower() or " not " or "\"" in query.lower():
         expr = Syntax()
         return evaluate(expr.parseString(stemQueryString(query))[0])
     else:
