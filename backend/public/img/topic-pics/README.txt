@@ -1,0 +1,1 @@
+this folder should contain the word counts pictures.
