@@ -12,8 +12,8 @@ import sys
 import json
 import sqlite3
 import os
-import nltk
-nltk.download('wordnet')
+# import nltk
+# nltk.download('wordnet')
 import pickle
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
