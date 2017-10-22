@@ -190,9 +190,9 @@ def GetQuotesExact(search_string):
     search_words = search_string.split(" ")
     for sw in search_words:
         # If one/more words not in index, return empty result set
+        # print "Index of {} is {}".format(sw, dict(index[sw]))
         if sw not in index:
-            return dict()
-
+            return []
     posting_list = index[search_words[0]]
     for sw in search_words[1:]:
         posting_list = merge(posting_list, index[sw], 1)
@@ -211,7 +211,7 @@ def merge(posting_list1, posting_list2, k=1):
         positions2 = posting_list2[docID]
         i = j = 0
         res = []
-        print docID, positions1, positions2
+        # print "docID = {}, positions1 = {}, positions2 = {}".format(docID, positions1, positions2)
         while i < len(positions1) and j < len(positions2):
             # print "comparing {}, and {} from document {}".format(positions1[i], positions2[j], docID)
             if (positions1[i] + k == positions2[j]):
@@ -339,7 +339,7 @@ if __name__ == "__main__":
     # result = Search("data mining", "VSM")
     #
     # print len(result)
-
+    #
     # with open("test.txt", "a") as resultfile:
     #     # resultfile.writelines("type: Positional Boolean, query: Latent Dirichlet\n")
     #     # result = GetQuotesExact("latent dirichlet")
