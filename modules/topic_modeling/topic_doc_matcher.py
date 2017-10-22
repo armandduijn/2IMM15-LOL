@@ -13,13 +13,12 @@ import pickle
 from nltk.corpus import stopwords
 
 ##### downloading the dictionary and corpus#####
-number_of_topics = 10 ## this is a number verified by perplexity
+number_of_topics = 8 ## this is a number verified by perplexity/topic-coherence
 dictionary = gensim.corpora.Dictionary.load('./topics/alltoken.dict')
 corpus = gensim.corpora.MmCorpus('./topics/corpus.mm')
 
-tfidf = gensim.models.TfidfModel(corpus)
-corpus_tfidf = tfidf[corpus]
-model = gensim.models.LdaModel(corpus=corpus_tfidf, id2word=dictionary, iterations=100, num_topics=number_of_topics)  # try with title, no ptfidf
+
+model = gensim.models.LdaModel(corpus=corpus, id2word=dictionary, iterations=500, num_topics=number_of_topics)  # try with title, no ptfidf
 model.save('./topics/lda_topic%d.lda' % number_of_topics)
 
 ###getting the word id and the probabilities####

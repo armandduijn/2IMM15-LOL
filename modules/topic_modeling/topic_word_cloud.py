@@ -13,11 +13,12 @@ for i in range(len(tableau20)):
     r, g, b = tableau20[i]
     tableau20[i] = (r / 255., g / 255., b / 255.)
 
-lda = gensim.models.LdaModel.load('./topics/lda_topic10.lda')
-WordCloud().__init__(background_color='white')
+lda = gensim.models.LdaModel.load('./topics/lda_topic8.lda')
+
 for t in range(lda.num_topics):
-    plt.figure()
-    plt.imshow(WordCloud().fit_words(dict(lda.show_topic(t, 15))))
+    # plt.figure()
+    plt.imshow(WordCloud(background_color='white',width=1200, height=1200).fit_words(dict(lda.show_topic(t, 15))))
     plt.axis("off")
     plt.title("Topic #" + str(t))
-    plt.show()
+    # plt.show()
+    plt.savefig('./topics/topic-pics/wc-topic%d.png' % t)

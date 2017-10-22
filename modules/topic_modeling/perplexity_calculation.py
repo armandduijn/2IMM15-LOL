@@ -17,7 +17,7 @@ corpus_tfidf = tfidf[corpus]
 #####generate the models and calculate each perplexity#####
 ##### first check a wild range, find the break point and then zoom in ######
 grid = {}
-parameter_list = range(5, 55, 5)
+parameter_list = range(5, 45, 5)
 for i in parameter_list:
     lda = gensim.models.LdaModel(corpus=corpus_tfidf, id2word=dictionary, iterations=5, num_topics=i)
     grid[i] = []

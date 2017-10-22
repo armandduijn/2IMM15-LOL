@@ -1,9 +1,10 @@
 ##### this is for parse the abstract part from the database and then build the dictionary and the corpus on it, to use LDA model##
 ###input file: the whole databasse
-### output file:corpus.mm',,,,alltoken.dict,,,,docidtokens.txt
+### output file:corpus.mm',,,,alltoken.dict,,,,docidtokens.txt...alltokens.txt
 from pyparsing import *
 from modules.stemming.porter2 import stem
 from multiprocessing import Process, freeze_support
+import string
 import warnings
 warnings.filterwarnings("ignore")
 import csv
@@ -29,8 +30,9 @@ stops = set(stopwords.words("english"))
 ## Because we have already used TFIDF model to judge the word,
 ## so the importance of each word will be give by LDA model automatically
 # nips_stopwords = [u"ii", u"iii", u"et", u"al", u"data", u"sample", u"setting", u"paper", u"graph", u"model", u"network", u"use", u"learning", u"algorithm", u"method", u"problem", u"learn", u"input", u"functions", u"function", u"theorem", u"lemma"]
-# for nips_stop in nips_stopwords:
-#     stops.add(nips_stop)
+nips_stopwords = [u"i", u"ii", u"iii", u"et", u"al"]
+for nips_stop in nips_stopwords:
+    stops.add(nips_stop)
 
 #print stops
     #for paper_stop in nips_stopwords:
@@ -72,43 +74,53 @@ with sqlite3.connect(os.getcwd() + '/../../data/database.sqlite') as database:
         title = doc[2].lower()
         text0 = doc[-1]
         text0 = text0.lower()
-        # # check if there's "abstract" in the text
-        # if 'abstract\n' in text0:
-        #     # get part of the paper after the first appeared 'abstract'
-        #     text = text0.split('abstract\n')[1]
-        #     # get part of the paper before the first blank line'\n\n'
-        #     # text here is still a huge string
-        #     text = text.split('\n\n')[0]
-        # elif 'abstract:\n' in text0:
-        #     text = text0.split('abstract:\n')[1]
-        #     # get part of the paper before the first blank line'\n\n'
-        #     # text here is still a huge string
-        #     text = text.split('\n\n')[0]
-        # elif 'introduction\n' in text0:
-        #     text = text0.split('introduction\n')[1]
-        #     # get part of the paper before the first blank line'\n\n'
-        #     # text here is still a huge string
-        #     text = text.split('\n\n')[0]
-        # elif 'introduction:\n' in text0:
-        #     text = text0.split('introduction:\n')[1]
-        #     # get part of the paper before the first blank line'\n\n'
-        #     # text here is still a huge string
-        #     text = text.split('\n\n')[0]
-        # elif 'summary\n' in text0:
-        #     text = text0.split('summary\n')[1]
-        #     # get part of the paper before the first blank line'\n\n'
-        #     # text here is still a huge string
-        #     text = text.split('\n\n')[0]
-        # elif 'overview\n' in text0:
-        #     text = text0.split('overview\n')[1]
-        #     # get part of the paper before the first blank line'\n\n'
-        #     # text here is still a huge string
-        #     text = text.split('\n\n')[0]
-        # else:
-        #     text = ' '
-        # text = text + ' ' + title
+        # check if there's "abstract" in the text
+        if 'abstract\n' in text0:
+            # get part of the paper after the first appeared 'abstract'
+            text = text0.split('abstract\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        elif 'abstract:\n' in text0:
+            text = text0.split('abstract:\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        elif 'abstracf\n' in text0:
+            text = text0.split('abstracf\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        elif 'introduction\n' in text0:
+            text = text0.split('introduction\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        elif 'introduction:\n' in text0:
+            text = text0.split('introduction:\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        elif '1introduction\n' in text0:
+            text = text0.split('1introduction:\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        elif 'summary\n' in text0:
+            text = text0.split('summary\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        elif 'overview\n' in text0:
+            text = text0.split('overview\n')[1]
+            # get part of the paper before the first blank line'\n\n'
+            # text here is still a huge string
+            text = text.split('\n\n')[0]
+        else:
+            text = ' '
+        text = text + ' ' + title + ' ' + title
 
-        text = title
+        # text = title
 
 
     # # test the quality of the corpus
@@ -119,19 +131,28 @@ with sqlite3.connect(os.getcwd() + '/../../data/database.sqlite') as database:
     # print set(recogonized_id).symmetric_difference(list_id)
     # it turns out this way will miss about 20 papers from 6600 papers(which actually don't have an abstract), I think this is acceptable.
 
+        punctuation = '\!\"\#\$\%\&\'\(\)\*\+\,\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~1234567890\n'
+        for c in punctuation:
+            text = text.replace(c, " ")
         # first, get the tokenized text
-        tokenized_text = Word(alphas).searchString(text)
+        # tokenized_text = Word(alphas).searchString(text)
+        # this way will save the compound word with a dash in between
+        # because I just use text and title, the quality of the data should be very high
+        tokenized_text = text.split(' ')
+
+
+
         # create a list to save all the nett tokens from one document
         nett_token = []
         for token in tokenized_text:
             # here token in tokenized_text is actually <class 'pyparsing.ParseResults'>,
             # want the first/only item in it which is  a string, then I can lemmatize it
-            token = str(token[0])
+            # token = str(token[0])
             token = lm.lemmatize(token)
             # print token ###capable
             # print len(token) ###7
             if (token not in stops) and (len(token) > 1 ):
-                token = stem(token)
+                # token = stem(token)
                 nett_token.append(token)
         # after having the list of tokens,
         # build a list with out the document id
@@ -140,15 +161,17 @@ with sqlite3.connect(os.getcwd() + '/../../data/database.sqlite') as database:
         id_token[id] = nett_token
 
     # now I have pure words from all documents(abstract) : ) save them save them save them!
-    # with open("alltokens.txt", 'w') as f:
-    #     json.dump(all_token_1, f)
+    with open("./topics/alltokens.txt", 'w') as f:
+        json.dump(all_token_1, f)
     with open('./topics/docidtokens.txt', 'w') as f:  # {"10":["mean","ddd"]....}
         json.dump(id_token, f)
         # print id_token #{1:['self','organization']}
     dictionary = corpora.Dictionary(all_token_1)
     dictionary.save('./topics/alltoken.dict')
     corpus = [dictionary.doc2bow(docs) for docs in all_token_1]
-    corpora.MmCorpus.serialize('./topics/corpus.mm', corpus)      #rint corpus #[[(0,1),(1,1)]]
+    tfidf = models.TfidfModel(corpus)
+    corpus_tfidf = tfidf[corpus]
+    corpora.MmCorpus.serialize('./topics/corpus.mm', corpus_tfidf)      #rint corpus #[[(0,1),(1,1)]]
 
 
     # tfidf = models.TfidfModel(corpus)
