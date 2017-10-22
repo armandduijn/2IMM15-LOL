@@ -57,14 +57,15 @@ for topic in topic_year_fre:
     topic_list = np.array(topic_list)
     print "topic %d" %topic
     for x in topic_list:
-        plt.figure()
-        plt.plot(x,topic_list,lw=2.5, color=tableau20[topic], label="TOPIC %d" % topic)
-        plt.xlabel("year")
-        plt.ylabel("frequency")
-        plt.title("Topic evolution of Topic%d" % topic)
-        plt.savefig('./topics/topic-pics/Topic evolution of Topic%d' % topic)
-        # plt.show()
-
+        print x
+        # plt.figure()
+        # plt.plot(x,topic_list,lw=2.5, color=tableau20[topic], label="TOPIC %d" % topic)
+        # plt.xlabel("year")
+        # plt.ylabel("frequency")
+        # plt.title("Topic evolution of Topic%d" % topic)
+        # plt.savefig('./topics/topic-pics/Topic evolution of Topic%d' % topic)
+        # # plt.show()
+        #
 
 
 
