@@ -2,6 +2,7 @@
 
 use App\Author\Collaboration as CollaborationComponent;
 use App\Similarity\Similarity as SimilarityComponent;
+use App\Topic\Topic as TopicComponent;
 use App\Container;
 use App\Helper;
 use App\Results\Results as ResultsComponent;
@@ -45,6 +46,11 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
         $component->setAuthorId($matches[1]);
 
         $components[] = $component;
+		
+		$component = new TopicComponent();
+        $component->setAuthorId($matches[1]);
+
+        $components[] = $component;
     }
 
     // If some condition is met
@@ -59,6 +65,10 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
         $component = new ResultsComponent();
 
         $components[] = $component;
+		
+		//$component = new TopicComponent();
+
+        //$components[] = $component;
     }
 
     return $this->renderer->render($response, 'input.phtml', [

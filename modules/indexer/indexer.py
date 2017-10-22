@@ -186,8 +186,8 @@ Output:
 """
 
 def GetQuotesExact(search_string):
-    index = Index()[0]
     search_words = search_string.split(" ")
+    index = GetDbPostings(search_words)
     for sw in search_words:
         # If one/more words not in index, return empty result set
         # print "Index of {} is {}".format(sw, dict(index[sw]))
@@ -198,14 +198,14 @@ def GetQuotesExact(search_string):
         posting_list = merge(posting_list, index[sw], 1)
     # Sort docs based on number of matches
     ranked_docs = OrderedDict(sorted(posting_list.viewitems(), key=lambda x: len(x[1])))
-    print "Merged indices: ", pp.pformat(posting_list)
+    #print "Merged indices: ", pp.pformat(posting_list)
     result = list(reversed(ranked_docs))
     return result
 
 def merge(posting_list1, posting_list2, k=1):
     merged_list = {}
     intersected_docIDs = sorted(set(posting_list1.keys()) & set(posting_list2.keys()))
-    print "Potential document IDs: ", intersected_docIDs
+    #print "Potential document IDs: ", intersected_docIDs
     for docID in intersected_docIDs:
         positions1 = posting_list1[docID]
         positions2 = posting_list2[docID]
