@@ -1,0 +1,9 @@
+<div class="card-text">
+		<?php foreach ($results as $id => $author): ?>
+				<a style="color: #00a736" data-id="<?= $id?>" href="?i=author:<?= $id?>"><?=
+                  $author['name']?></a>
+				<?php if ($author !== end($results))
+					echo ", "
+				?>
+		<?php endforeach ?>
+</div>
