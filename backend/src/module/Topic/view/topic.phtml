@@ -2,7 +2,7 @@
     <ul class="list-inline">
         <?php foreach($results as $result): ?>
             <li style="float: left;">
-				<img src="<?= (string)$result ?>" style="width: 250px;">
+				<a data-id="<?= "topic" . $result?>" href="?i=topic:<?= $result?>"><img src="<?= "/img/topic-pics/wc-topic" . (string)$result . ".png" ?>" style="width: 250px;"></a>
             </li>
         <?php endforeach; ?>
     </ul>

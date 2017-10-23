@@ -15,9 +15,14 @@ class Results extends AbstractModule implements RenderableInterface
 
     public function render($data = []): string
     {
+		if (preg_match('/topic:([0-9]+)/', $_GET['i'], $matches)) {
+			$command = "python \"" . __DIR__ . "/../../../../modules/view-helpers/topic.py\" ";
+			$command .= escapeshellarg($matches[1]);
+		} else {
+			$command = "python \"" . __DIR__ . "/../../../../modules/view-helpers/query.py\" ";
+			$command .= escapeshellarg($_GET['i']);
+		}
 
-        $command = "python \"" . __DIR__ . "/../../../../modules/view-helpers/query.py\" ";
-        $command .= escapeshellarg($_GET['i']);
         //print($command);
         //var_dump($command);
         $output = shell_exec($command);
@@ -44,11 +49,11 @@ class Results extends AbstractModule implements RenderableInterface
                 ];
             }
         }
-    
-        $command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
-        $command .= escapeshellarg($_GET['i']);
-        $stemmedInput = explode(" ", shell_exec($command));
-        $stemmedInput = array_filter($stemmedInput, function($var) { return !in_array($var, ['not', 'and', 'or']);});
+		
+		$command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
+		$command .= escapeshellarg($_GET['i']);
+		$stemmedInput = explode(" ", shell_exec($command));
+		$stemmedInput = array_filter($stemmedInput, function($var) { return !in_array($var, ['not', 'and', 'or']);});
         
         $data = [
             $results = $documents,
