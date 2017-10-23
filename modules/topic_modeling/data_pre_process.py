@@ -62,7 +62,7 @@ recogonized_id = []
 #         next(papersreader, None)
 
    ##### here I test the whole database#######
-with sqlite3.connect(os.getcwd() + '/../../data/database.sqlite') as database:
+with sqlite3.connect(os.getcwd() + 'database.sqlite') as database: #/../../data/ beasuse I used a cleaned database, but I can not upload it to github
     cursor = database.cursor()
     cursor.execute('SELECT * FROM papers')
     for doc in cursor.fetchall():

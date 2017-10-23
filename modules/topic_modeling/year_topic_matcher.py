@@ -4,7 +4,7 @@ import os
 
 
 
-with sqlite3.connect(os.getcwd() + '/../../data/database.sqlite') as database:
+with sqlite3.connect(os.getcwd() + 'database.sqlite') as database:#/../../data/ same reason, new database, can't be uploaded
     cursor = database.cursor()
     cursor.execute('SELECT * FROM papers')
 
