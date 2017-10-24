@@ -1,28 +1,29 @@
-<div class="r" style="margin-bottom: 26px;">
-  <div>
+<div class="r mb-4">
     <h4 style="font-size: 17px; margin-bottom: 4px;">
-        <a data-toggle="modal" data-target="#documentModal" data-url="https://papers.nips.cc/paper/<?= $result['pdf_name']
-        ?>" data-title="<?= $result['title'] ?>" href="https://papers.nips.cc/paper/<?= $result['pdf_name'] ?>">
-          <?= queryTermBold($stemmedInput, $result['title']) ?>
+        <a
+            data-toggle="modal"
+            data-target="#documentModal"
+            data-url="https://papers.nips.cc/paper/<?= $result['pdf_name'] ?>"
+            data-title="<?= $result['title'] ?>"
+            href="https://papers.nips.cc/paper/<?= $result['pdf_name'] ?>">
+            <?= $result['title'] ?>
         </a>
     </h4>
     <div class="s" style="line-height:18px; font-size: 13px; color: #545454">
         <div style="color: #00a736">
-          <?php foreach($result['authors'] as $i => $author): ?>
-              <a style="color: #00a736" data-id="<?= $author['id']?>" href="?i=author:<?= $author['id']?>"><?=
-                  $author['name']?></a><?php
-                if ($i + 2 < count($result['authors'])) {
-                  echo ',';
-                } elseif ($i + 2 == count($result['authors'])) {
-                  echo ' and';
-                }
-              ?>
-          <?php endforeach; ?> - <a style="color: #00a736" href="?i=year:<?= $result['year']?>"><?= $result['year']
-                ?></a>
+            <?php foreach($result['authors'] as $i => $author): ?>
+                <a
+                    style="color: #00a736"
+                    data-id="<?= $author['id']?>"
+                    href="?i=author:<?= $author['id']?>"><?= $author['name']?></a><?php if ($i + 2 < count($result['authors'])) { echo ','; } elseif ($i + 2 == count($result['authors'])) { echo ' and'; } ?>
+            <?php endforeach; ?> - <a style="color: #00a736" href="?i=year:<?= $result['year']?>"><?= $result['year'] ?></a>
         </div>
-        <?= queryTermBold($stemmedInput, $result['snippet']) ?>
+
+        <?php if ($result['snippet'] === 'Abstract Missing') : ?>
+            <em>Abstract Missing</em>
+        <?php else : ?>
+            <?= preg_replace('/^([\s\S]{1,200})[\s]+?[\s\S]+/', '$1', $result['snippet']) ?>...
+        <?php endif; ?>
+
     </div>
-    
-  </div>
-  
 </div>

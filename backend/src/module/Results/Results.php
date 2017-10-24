@@ -3,11 +3,21 @@
 namespace App\Results;
 
 use App\AbstractModule;
+use App\Helper;
 use App\RenderableInterface;
 use PDO;
 
 class Results extends AbstractModule implements RenderableInterface
 {
+
+    /**
+     * Default page limit
+     *
+     * @var int
+     */
+    private $limit = 10;
+
+
     public function getTitle(): string
     {
         return 'Results';
@@ -15,33 +25,42 @@ class Results extends AbstractModule implements RenderableInterface
 
     public function render($data = []): string
     {
-		if (preg_match('/topic:([0-9]+)/', $_GET['i'], $matches)) {
-			$command = "python \"" . __DIR__ . "/../../../../modules/view-helpers/topic.py\" ";
-			$command .= escapeshellarg($matches[1]);
-		} else {
-			$command = "python \"" . __DIR__ . "/../../../../modules/view-helpers/query.py\" ";
-			$command .= escapeshellarg($_GET['i']);
-		}
+        $input  = $_GET['i'];
+        $offset = isset($_GET['o']) ? (int) $_GET['o'] : 0;
 
-        //print($command);
-        //var_dump($command);
-        $output = shell_exec($command);
-        
-        $documentIds = array_map('intval', explode(',', $output));
-    
-        // retrieve info for documents
-        $db = new PDO('sqlite:'.__DIR__.'/../../../../data/database.sqlite');
-        $statement = $db->prepare('SELECT *, GROUP_CONCAT(authors.name) as authors_name, GROUP_CONCAT(authors.id) as authors_id from papers INNER JOIN paper_authors ON papers.id=paper_authors.paper_id INNER JOIN authors ON paper_authors.author_id=authors.id WHERE papers.id=:id GROUP BY papers.id');
+        if (preg_match('/topic:([0-9]+)/', $_GET['i'], $matches)) {
+            $output = Helper::runCommand('topic.py', $matches[1]);
+        } else {
+            $output = Helper::runCommand('query.py', $_GET['i']);
+        }
+
+        $outputIds = array_map('intval', explode(',', $output));
+        $ids = array_slice($outputIds, $offset, $this->limit);
+
+        // Retrieve info for documents
+
+        /** @var PDO $connection */
+        $container  = $this->getContainer();
+        $connection = $container[PDO::class];
+
+        $statement  = $connection->prepare('SELECT *, GROUP_CONCAT(authors.name) as authors_name, GROUP_CONCAT(authors.id) as authors_id from papers INNER JOIN paper_authors ON papers.id=paper_authors.paper_id INNER JOIN authors ON paper_authors.author_id=authors.id WHERE papers.id=:id GROUP BY papers.id');
+
         $documents = [];
-        foreach ($documentIds as $id) {
+        foreach ($ids as $id) {
             $statement->execute([':id' => $id]);
+
             $row = $statement->fetch(PDO::FETCH_ASSOC);
+
             $documents[$id]["title"] = htmlspecialchars($row['title']);
             $documents[$id]["year"] = $row['year'];
             $documents[$id]["pdf_name"] = $row['pdf_name'];
+            $documents[$id]["abstract"] = $row["abstract"];
+
             $authorIds = explode(",", $row['authors_id']);
             $authorNames = explode(",", htmlspecialchars($row['authors_name']));
+
             $documents[$id]["authors"] = [];
+
             foreach ($authorIds as $i => $authorId) {
                 $documents[$id]["authors"][] = [
                   'id' => $authorId,
@@ -49,22 +68,23 @@ class Results extends AbstractModule implements RenderableInterface
                 ];
             }
         }
-		
-		$command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
-		$command .= escapeshellarg($_GET['i']);
-		$stemmedInput = explode(" ", shell_exec($command));
-		$stemmedInput = array_filter($stemmedInput, function($var) { return !in_array($var, ['not', 'and', 'or']);});
-        
-        $data = [
-            $results = $documents,
-            $stemmedInput
-        ];
 
-        ob_start();
+        // Retrieve stemmed input
 
-        extract($data);
-        include __DIR__ . '/view/results.phtml';
+        $output = Helper::runCommand('stem.py', $_GET['i']);
 
-        return ob_get_clean();
+        $stemmed = explode(" ", $output);
+        $stemmed = array_filter($stemmed, function ($var) {
+            return !in_array($var, ['not', 'and', 'or']);
+        });
+
+        return Helper::render(__DIR__ . '/view/results.phtml', [
+            'input'   => $input,
+            'total'   => count($outputIds),
+            'offset'  => $offset,
+            'limit'   => $this->limit,
+            'results' => $documents,
+            'stemmed' => $stemmed,
+        ]);
     }
 }

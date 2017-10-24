@@ -1,53 +1,78 @@
 <?php
-function queryTermBold($stemmedQuery, $text) {
-  // Stem the text
-//  $command = "python \"".getcwd()."/../../modules/view-helpers/stem.py\" ";
-//  $command .= escapeshellarg($text);
-//  $stemmedText = shell_exec($command);
-//  $patterns = [];
-//  foreach($stemmedQuery as $term)
-//      $patterns[] = '/\b('.trim($term).')\b/i';
-//
-//  return preg_replace($patterns, '<strong>$0</strong>', $stemmedText);
-    return $text;
-}
+/** @var string $input */
+/** @var int $total */
+/** @var int $offset */
+/** @var int $limit */
+/** @var array $results */
+/** @var array $stemmed */
 ?>
+
 <p class="card-text">
-  <?php printf("%d documents found", count($results)); ?>
-  <?php
-  foreach($results as $id => $document) {
-    $result = [
-        'title' => $document['title'],
-        //'info' => 'ID: '.$id.' Year: '.$document['year'].' Authors: '.implode(", ", $document['authors']),
-        'authors' => $document['authors'],
-        'year' => $document['year'],
-        'pdf_name' => $document['pdf_name'],
-        'snippet' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a scelerisque ligula. Nullam cursus, mi et cursus aliquet, ex erat hendrerit magna, non imperdiet magna metus sit amet diam. Vivamus porttitor volutpat enim a congue. Ut tempor risus a turpis accumsan ullamcorper. Morbi in ipsum dolor. Donec nisl mauris, auctor ac dictum venenatis, mattis vitae eros.',
-    ];
-    include __DIR__ . '/result.phtml';
-  }
-  ?>
+    <span class="text-muted"><?= sprintf("%d document(s) found", $total); ?></span>
+    <?php
+        foreach($results as $id => $document) {
+            $result = [
+                'title'    => $document['title'],
+                'authors'  => $document['authors'],
+                'year'     => $document['year'],
+                'pdf_name' => $document['pdf_name'],
+                'snippet'  => $document['abstract'],
+            ];
+
+            include __DIR__ . '/result.phtml';
+        }
+    ?>
 </p>
 
-<div class="modal fade" id="documentModal" tabindex="-1" role="dialog" aria-labelledby="documentModalLabel" 
-     aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="documentModalLabel">DocumentViewer</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" style="padding: 0px; line-height: 0px; background: url('../load.png') center center
+<?php
+$amountOfPages = round($total / $limit);
+?>
+
+<?php if ($offset != 0) : ?>
+    <a
+        href="/input/<?= sprintf('?i=%s&o=%s', urlencode($input), $offset - $limit) ?>"
+        class="pl-0 pr-2 btn">
+        Previous
+    </a>
+<?php endif; ?>
+
+<?php foreach (range(max(($offset / $limit)-4, 0), min(($offset / $limit)+4, $amountOfPages)) as $index => $page) : ?>
+    <a
+        href="/input/<?= sprintf('?i=%s&o=%s', urlencode($input), $page * $limit) ?>"
+        class="pl-1 pr-1 btn<?= $page == ($offset / $limit) ? ' disabled' : '' ?>">
+        <?= ($page + 1) ?>
+    </a>
+<?php endforeach; ?>
+
+<?php if ($offset <= ($total - $limit)) : ?>
+    <a
+        href="/input/<?= sprintf('?i=%s&o=%s', urlencode($input), $offset + $limit) ?>"
+        class="pr-0 pl-2 btn">
+        Next
+    </a>
+<?php endif; ?>
+
+<div class="modal fade" id="documentModal" tabindex="-1" role="dialog" aria-labelledby="documentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="documentModalLabel">DocumentViewer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 0px; line-height: 0px; background: url('../load.png') center center
       no-repeat">
-        <iframe class="modal-iframe" src="" style="width: 100%; height: calc(70vh - 50px);"></iframe>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <a class="external" target="_blank" href="#"><button type="button" class="btn btn-primary">Open
-            externally</button></a>
-      </div>
+                <iframe class="modal-iframe" src="" style="width: 100%; height: calc(70vh - 50px);"></iframe>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                </a>
+                <a href="#" class="external btn btn-primary" target="_blank">
+                    Open externally
+                </a>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
