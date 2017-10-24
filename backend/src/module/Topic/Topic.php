@@ -85,10 +85,10 @@ class Topic extends AbstractModule implements RenderableInterface
 					$results[0] = $src_pic;
 				}
 				//Get the evolution graph
-				$src_pic = "/img/topic-pics/topic" . $id . ".png";
-				$topic_pic = __DIR__ . "/../../../public/img/topic-pics/topic" . $id . ".png";
+				$src_pic = "/img/topic-pics/" . $id . ".jpg";
+				$topic_pic = __DIR__ . "/../../../public/img/topic-pics/" . $id . ".jpg";
 				if (!file_exists($topic_pic)) {
-					$original_pic = __DIR__ . "/../../../../modules/topic_modeling/topics/topic-pics/topic" . $id . ".jpg";
+					$original_pic = __DIR__ . "/../../../../modules/topic_modeling/topics/topic-pics/" . $id . ".jpg";
 					if (file_exists($original_pic)) {
 						copy($original_pic,$topic_pic);
 						$results[1] = $src_pic;
