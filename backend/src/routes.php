@@ -90,11 +90,6 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
 
     // If some condition is met
     if (true) {
-        if (!$topicShown) {
-            $component = new TopicComponent();
-            $components[] = $component;
-        }
-
         $component = new ResultsComponent();
 
         $components[] = $component;
