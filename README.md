@@ -23,11 +23,11 @@ Inside the `backend` directory, run the command `php composer.phar install` to i
 
 Inside the `modules` directory, run the command `pip install -r requirements.txt` to install the required Python packages.
 
-Then, install the required NLTK data `python download.py`.
+Then, install the required NLTK data `python download.py`.  
 
 ### Dataset
 
-The information retrieval system relies of pre-computed values to display relevant results. These pre-computed data files can be downloaded from an [online repository]() (1 GB) and must be placed inside the `data` directory.
+The information retrieval system relies of pre-computed values to display relevant results. These pre-computed data files can be downloaded from an [online repository](https://www.dropbox.com/s/7xw14441ne74jb8/data.zip?dl=1) (1 GB) and must be placed inside the `data` directory.
 
 The contents of the `data` directory should eventually look similar to the screenshot below.
 
