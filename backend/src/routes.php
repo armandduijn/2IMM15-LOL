@@ -102,7 +102,6 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
 
     return $this->renderer->render($response, 'input.phtml', [
         'input'        => $input,
-        'stemmedInput' => Helper::runCommand('stem.py', $input),
         'components'   => $components,
     ]);
 });
