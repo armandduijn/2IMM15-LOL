@@ -9,6 +9,10 @@ use App\Results\Results as ResultsComponent;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+$app->get('/', function ($request, $response) {
+    return $this->renderer->render($response, 'index.phtml');
+});
+
 $app->get('/api/suggest', function (Request $request, Response $response, $args) {
     $params = $request->getQueryParams();
 
