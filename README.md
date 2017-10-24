@@ -23,7 +23,7 @@ Inside the `backend` directory, run the command `php composer.phar install` to i
 
 Inside the `modules` directory, run the command `pip install -r requirements.txt` to install the required Python packages.
 
-Then, install the required NLTK data `python -m nltk.downloader all`.
+Then, install the required NLTK data `python download.py`.
 
 ### Dataset
 
