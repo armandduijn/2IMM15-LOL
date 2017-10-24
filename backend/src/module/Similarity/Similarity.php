@@ -20,7 +20,7 @@ class Similarity extends AbstractModule implements RenderableInterface
      */
     public function __construct()
     {
-        $this->setTitle('Similarity');
+        $this->setTitle('Similar');
     }
 
     /**
