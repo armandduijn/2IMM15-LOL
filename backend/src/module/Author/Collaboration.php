@@ -3,6 +3,7 @@
 namespace App\Author;
 
 use App\AbstractModule;
+use App\Helper;
 use App\RenderableInterface;
 use App\Author\Model as Author;
 use App\Paper\Model as Paper;
@@ -10,15 +11,27 @@ use PDO;
 
 class Collaboration extends AbstractModule implements RenderableInterface
 {
+    private $authors;
+
+    private $collaborations;
+
     /**
-     * @param Author[] $authors
+     * Collaboration constructor.
+     */
+    public function __construct(array $authors)
+    {
+        $this->authors = $authors;
+        $this->collaborations = $this->papers();
+    }
+
+    /**
      * @return Paper[]
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function papers(array $authors): array
+    public function papers(): array
     {
-        if (count($authors) < 2) {
+        if (count($this->authors) < 2) {
             return [];
         }
 
@@ -44,12 +57,12 @@ class Collaboration extends AbstractModule implements RenderableInterface
 
         $statement = $connection->prepare($sql);
         $statement->execute([
-            ':firstAuthorId' => $authors[0]->getId()
+            ':firstAuthorId' => $this->authors[0]->getId()
         ]);
 
         $collaborators = array_map(function (Author $author) {
             return $author->getId();
-        }, $authors);
+        }, $this->authors);
 
         // Generate a list of papers that have been contributed on by the provided authors
         $collaborations = array_filter($statement->fetchAll(), function ($collaboration) use ($collaborators) {
@@ -71,9 +84,9 @@ class Collaboration extends AbstractModule implements RenderableInterface
         }, $papers));
 
         // Generate a list of papers that have been worked on by all the authors
-        $intersect = array_filter($papers, function (Paper $paper) use ($occurrences, $authors) {
+        $intersect = array_filter($papers, function (Paper $paper) use ($occurrences) {
             // An author can't collaborate with himself
-            return $occurrences[$paper->getId()] === (count($authors) - 1);
+            return $occurrences[$paper->getId()] === (count($this->authors) - 1);
         });
 
         return array_unique($intersect);
@@ -81,16 +94,14 @@ class Collaboration extends AbstractModule implements RenderableInterface
 
     public function getTitle(): string
     {
-        return 'Collaboration';
+        return 'Collaborations';
     }
 
     public function render($data = []): string
     {
-        ob_start();
-
-        extract($data);
-        include __DIR__ . '/view/collaboration.phtml';
-
-        return ob_get_clean();
+        return Helper::render(__DIR__ . '/view/collaboration.phtml', [
+            'authors'        => $this->authors,
+            'collaborations' => $this->collaborations,
+        ]);
     }
 }
