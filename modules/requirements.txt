@@ -1,3 +1,12 @@
-flask
-colorprint
-nltk
+colorprint==0.1
+nltk==3.2.5
+pandas==0.19.1
+Flask==0.12.2
+matplotlib==1.3.1
+gensim==3.0.1
+modules==1.0.0
+numpy==1.13.3
+pyparsing==2.2.0
+scipy==1.0.0rc2
+scikit_learn==0.19.1
+wordcloud==1.3.1
