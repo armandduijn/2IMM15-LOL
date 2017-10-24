@@ -34,8 +34,13 @@ class Results extends AbstractModule implements RenderableInterface
             $output = Helper::runCommand('query.py', $_GET['i']);
         }
 
-        $outputIds = array_map('intval', explode(',', $output));
-        $ids = array_slice($outputIds, $offset, $this->limit);
+        if (trim($output) == '') {
+            $outputIds = [];
+            $ids = [];
+        } else {
+            $outputIds = array_map('intval', explode(',', trim($output)));
+            $ids = array_slice($outputIds, $offset, $this->limit);
+        }
 
         // Retrieve info for documents
 
