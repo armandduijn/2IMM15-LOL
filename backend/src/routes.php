@@ -8,25 +8,14 @@ use App\Helper;
 use App\Results\Results as ResultsComponent;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use App\Author\Model as Author;
 
 $app->get('/api/suggest', function (Request $request, Response $response, $args) {
     $params = $request->getQueryParams();
-    $response = $response->withHeader('Content-type', 'application/json');
 
     $suggestions = new \App\Suggestion\Suggestion();
-    $response = $response->withJson($suggestions->giveSuggestions($params['q']));
-    return $response;
+
+    return $response->withJson($suggestions->giveSuggestions($params['q']));
 });
-
-$app->get('/[{name}]', function ($request, $response, $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
-
-    // Render index view
-    return $this->renderer->render($response, 'index.phtml', $args);
-});
-
 
 $app->get('/input/', function (Request $request, Response $response, $args) {
     $params = $request->getQueryParams();
