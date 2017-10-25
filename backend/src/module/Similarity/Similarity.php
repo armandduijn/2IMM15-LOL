@@ -51,11 +51,14 @@ class Similarity extends AbstractModule implements RenderableInterface
 
         /** @var \PDO $connection */
         $connection = $this->getContainer()->get(\PDO::class);
-        $statement = $connection->query('SELECT * FROM authors WHERE id IN (' . implode(',', $ids) . ')');
+        $statement = $connection->prepare('SELECT * FROM authors WHERE id = :id');
 
-        foreach ($statement->fetchAll() as $index => $data) {
-            // Assume that the results are in the correct order
-            $results[$index][] = $data['name'];
+        foreach ($ids as $index => $id) {
+            $statement->execute([':id' => $id]);
+
+            $row = $statement->fetch(\PDO::FETCH_ASSOC);
+
+            $results[$index][] = $row['name'];
         }
 
         return Helper::render(__DIR__ . '/view/similarity.phtml', [
