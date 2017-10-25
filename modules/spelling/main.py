@@ -1,5 +1,6 @@
 from collections import Counter
 from nltk.tokenize import word_tokenize
+import pickle
 
 MODULE_NAME = 'spelling'
 
@@ -9,8 +10,8 @@ def words(text):
     return word_tokenize(text.lower())
 
 def register(container):
-    path = container['data_dir'] + '/papers.csv'
-    container[MODULE_NAME] = Counter(words(open(path).read()))
+    path = container['data_dir'] + '/derived/spelling.lol'
+    container[MODULE_NAME] =  pickle.load(open(path, 'rb'))
 
 def execute(container, argument):
     global WORDS
