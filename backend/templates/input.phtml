@@ -57,13 +57,31 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     <script src="/js/typeahead.bundle.min.js"></script>
     <script type="application/javascript">
-      $("input[name=i]").typeahead({
-       source: function(query, syncResults, asyncResults) {
-         jQuery.get('api/suggest?q=' + query, function(data) {
-           asyncResults(data);
-         });},
-       autoSelect: true
-     });
+    $(document).ready(function() {
+        var suggestions = new Bloodhound({
+            datumTokenizer: function(d) {
+                return Bloodhound.tokenizers.whitespace(d.name);
+            },
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            remote: {
+                url: '/api/suggest?q=%QUERY',
+                wildcard: '%QUERY',
+                rateLimitWait: 100
+            }
+        });
+
+        suggestions.initialize();
+
+        $("input[name=i]").typeahead(
+            {
+                highlight: true
+            },
+            {
+                source: suggestions.ttAdapter()
+            }
+        );
+
+    });
     </script>
     <script type="application/javascript">
       $('#documentModal').on('show.bs.modal', function (event) {
