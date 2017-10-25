@@ -109,7 +109,7 @@ def Query(query):
     elif query.startswith("year:"):
         year = query[5:]
         return GetPapersIn(year)
-    elif " or " in query.lower() or " and " in query.lower() or " not " in query.lower():
+    elif " or " in query.lower() or " and " in query.lower() or "not " in query.lower() or " not" in query.lower():
         expr = Syntax()
         return evaluate(expr.parseString(stemQueryString(query))[0])
     else:

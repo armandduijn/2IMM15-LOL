@@ -316,7 +316,7 @@ def Search(query, type = "BM25"):
     return result
 
 def GetNot(not_set):
-    docs = Index()[1]
+    docs = GetDbDocs(not_set)
     all = Set(docs.keys())
     return all.difference(not_set)
 
