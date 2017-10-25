@@ -8,6 +8,7 @@ use App\Helper;
 use App\Results\Results as ResultsComponent;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use App\Author\Model as Author;
 
 $app->get('/', function ($request, $response) {
     return $this->renderer->render($response, 'index.phtml');
@@ -34,7 +35,22 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
     $components = [];
     $topicShown = false;
 
-    // If `author:$id` is found in the input
+    // If multiple `author:$id` patterns are found in the input
+    if (preg_match_all('/author:([0-9]+)/', $input, $matches)) {
+        if (count($matches[1]) >= 2) {
+            $authors = [];
+
+            foreach ($matches[1] as $id) {
+                $authors[] = Author::find($id);
+            }
+
+            $component = new CollaborationComponent($authors);
+
+            $components[] = $component;
+        }
+    }
+
+    // If a `author:$id` is found in the input
     if (preg_match('/author:([0-9]+)/', $input, $matches)) {
         $component = new SimilarityComponent();
         $component->setAuthorId($matches[1]);
@@ -79,13 +95,6 @@ $app->get('/input/', function (Request $request, Response $response, $args) {
         $components[] = $component;
 
         $topicShown = true;
-    }
-
-    // If some condition is met
-    if (false) {
-        $component = new CollaborationComponent();
-
-        $components[] = $component;
     }
 
     // If some condition is met

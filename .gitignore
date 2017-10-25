@@ -1,4 +1,5 @@
 data/
+backend/public/img/topic-pics/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

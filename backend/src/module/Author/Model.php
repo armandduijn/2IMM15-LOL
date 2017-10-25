@@ -3,6 +3,7 @@
 namespace App\Author;
 
 use App\AbstractModel;
+use App\Container;
 use PDO;
 
 class Model extends AbstractModel
@@ -50,6 +51,30 @@ class Model extends AbstractModel
         }
 
         return $this;
+    }
+
+    /**
+     * @param int $id
+     * @return Model
+     */
+    public static function find(int $id): self
+    {
+        /** @var PDO $connection */
+        $connection = Container::getContainer()->get(PDO::class);
+
+        $statement = $connection->prepare('SELECT * FROM authors WHERE id = :id LIMIT 1');
+        $statement->execute([ ':id' => $id ]);
+
+        $result = $statement->fetch();
+
+        if (is_array($result)) {
+            return new self([
+                'id'   => (int)    $result['id'],
+                'name' => (string) $result['name'],
+            ]);
+        }
+
+        return new self();
     }
 
     /**

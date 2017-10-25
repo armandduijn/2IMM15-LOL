@@ -4,7 +4,7 @@
 ?>
 <p class="card-text">The authors
     <?php foreach ($authors as $index => $author) : ?>
-        <a href="?i=<?= urlencode($author->getName()) ?>"><?= $author->getName() ?></a><?= $index < (count($authors) - 1) ? ',' : '' ?>
+        <a href="?i=author:<?= urlencode($author->getId()) ?>"><?= $author->getName() ?></a><?= $index < (count($authors) - 1) ? ',' : '' ?>
     <?php endforeach; ?>
     <?php if (count($collaborations) > 0) : ?>
     have collaborated on the following <?= (count($collaborations) > 1) ? count($collaborations) . ' papers:' : 'paper:'  ?>
