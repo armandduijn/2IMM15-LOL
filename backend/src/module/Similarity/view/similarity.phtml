@@ -1,5 +1,6 @@
 <div class="card-text">
     <?php if (count($results) > 0) : ?>
+    <p>Similar authors to <?= $author->getName() ?></p>
         <ul>
             <?php foreach($results as $result): ?>
                 <li>
@@ -8,6 +9,6 @@
             <?php endforeach; ?>
         </ul>
     <?php else: ?>
-        <em class="text-muted">There aren't any similar authors</em>
+        <em class="text-muted">There aren't any similar authors to <?= $author->getName() ?></em>
     <?php endif; ?>
 </div>

@@ -3,6 +3,7 @@
 namespace App\Similarity;
 
 use App\AbstractModule;
+use App\Author\Model as Author;
 use App\Helper;
 use App\RenderableInterface;
 
@@ -30,6 +31,8 @@ class Similarity extends AbstractModule implements RenderableInterface
     {
         $output = Helper::runOnServer('similarity', $this->getAuthorId());
 
+        $author = Author::find($this->getAuthorId());
+
         // Limit the amount of results
         // The first result (100%) is the author himself.
         $results = array_slice($output, 1, 5);
@@ -56,7 +59,8 @@ class Similarity extends AbstractModule implements RenderableInterface
         }
 
         return Helper::render(__DIR__ . '/view/similarity.phtml', [
-            'results' => $results
+            'results' => $results,
+            'author'  => $author,
         ]);
     }
 
