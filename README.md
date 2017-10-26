@@ -33,6 +33,8 @@ The contents of the `data` directory should eventually look similar to the scree
 
 ![data](screenshot-data.png)
 
+There is another dataset that can be downloaded from [another online repository](https://www.dropbox.com/s/x4lz7pcuy9ofswu/data_java.zip?dl=1) (25 MB), but this dataset is not required for the application to run.
+
 ## Usage
 
 ### Information Retrieval System
